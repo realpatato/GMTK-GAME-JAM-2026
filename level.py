@@ -5,12 +5,12 @@ from pathlib import Path
 
 
 class Level():
-    def __init__(self, tiles = {}):
+    def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled'):
         #give levels names. make button and inputbox so that we can set the name, lvl w/h, and click open file button
         self.tiles = tiles
-        self.w = 20
-        self.h = 12
-        self.name = 'untitled'
+        self.w = w
+        self.h = h
+        self.name = name
 
 
     def draw(self, screen, off_x = 0, off_y = 0):
