@@ -8,14 +8,19 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
+        bomby = parser.AnimatedSprite(0, 16, 32, 32, 4, {"idle" : ((0, 2), 10)}, "idle")
+        self.animated_sprites = [bomby]
+        self.sprites = [bomby]
 
     def enter(self, persistent_data):
         super().enter(persistent_data)
 
     def draw(self, screen):
         screen.fill((0, 255, 0))
-        bomby = parser.Sprite(0, 16, 32, 32)
-        screen.blit(self.spritesheet, (0, 0), bomby.rect())
+        for sprite in self.animated_sprites:
+            sprite.advance()
+        for sprite in self.sprites:
+            screen.blit(self.spritesheet, (0, 0), sprite.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
