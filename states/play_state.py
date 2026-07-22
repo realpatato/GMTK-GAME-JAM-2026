@@ -14,7 +14,7 @@ class PlayState(BaseState):
 
     def draw(self, screen):
         screen.fill((0, 255, 0))
-        bomby = parser.Sprite(0, 16, 32, 32, self.sssf)
+        bomby = parser.Sprite(0, 16, 32, 32)
         screen.blit(self.spritesheet, (0, 0), bomby.rect())
 
     def handle_event(self, event):
