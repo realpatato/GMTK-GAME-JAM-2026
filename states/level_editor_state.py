@@ -2,6 +2,9 @@ from .base_state import BaseState
 import pygame
 
 class LevelEditorState(BaseState):
+    def start(self, persistent_data):
+        super.start(persistent_data)
+
     def draw(self, screen):
         screen.fill((0, 0, 255))
 
