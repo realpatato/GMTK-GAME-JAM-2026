@@ -3,6 +3,8 @@ import pygame
 import level
 import parser
 import player
+import level
+import json
 
 pygame.display.init()
 
