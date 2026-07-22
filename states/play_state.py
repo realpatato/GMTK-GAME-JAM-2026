@@ -17,20 +17,18 @@ class PlayState(BaseState):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d]:
             self.player.inc_vel()
-            self.player.sprite.state = "r_walk"
         elif keys[pygame.K_a]:
             self.player.inc_vel()
-            self.player.sprite.state = "l_walk"
-        
-        if round(self.player.x_vel, 1) != 0:
-            self.player.inc_vel()
         else:
-            if self.player.x_accel < 0:
-                self.player.sprite.state = "r_idle"
+            if round(self.player.x_vel, 1) != 0:
+                self.player.inc_vel()
             else:
-                self.player.sprite.state = "l_idle"
+                self.player.x_vel = 0
+                if self.player.x_accel < 0:
+                    self.player.sprite.state = "r_idle"
+                else:
+                    self.player.sprite.state = "l_idle"
             
-
     def enter(self, persistent_data):
         super().enter(persistent_data)
 
@@ -57,7 +55,9 @@ class PlayState(BaseState):
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_d:
-                self.player.x_accel = -0.05
+                if self.player.x_vel > 0:
+                    self.player.x_accel = -0.05
 
             if event.key == pygame.K_a:
-                self.player.x_accel = 0.05
+                if self.player.x_vel < 0:
+                    self.player.x_accel = 0.05
