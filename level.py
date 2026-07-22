@@ -32,11 +32,9 @@ class Level():
             #screen.blit
 
     @classmethod
-    def load(cls, filename):
-        path = _get_path(filename)
-
+    def load(cls, path):
         level_data = None
-        with open(path, 'w') as f:
+        with open(path, 'r') as f:
             level_data = json.load(f)
         if level_data:
             return cls(

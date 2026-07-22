@@ -2,6 +2,8 @@ from .base_state import BaseState
 import pygame
 import parser
 import player
+import level
+import json
 
 pygame.display.init()
 
