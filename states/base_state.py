@@ -8,6 +8,7 @@ class BaseState:
         self.persist = persistent_data
 
     def leave(self):
+        self.done = False
         return self.persist
 
     def handle_event(self, event): 
