@@ -9,7 +9,7 @@ keep_playing = True
 
 while keep_playing:
     for event in pygame.event.get():
-        if event == pygame.QUIT:
+        if event.type == pygame.QUIT:
             keep_playing = False
 
     pygame.display.update()
