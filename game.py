@@ -1,10 +1,13 @@
 import pygame
+from constants import *
 
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((1000, 600))
+        self.native_screen = pygame.Surface(NATIVE_RESOLUTION)
         self.keep_playing = True
         self.clock = pygame.time.Clock()
+
 
     def begin(self, states, start_state):
         self.state_name = start_state
@@ -46,6 +49,11 @@ class Game:
 
     def draw(self):
         # draw things here
-        self.state.draw(self.screen)
+        self.state.draw(self.native_screen)
+
+        self.screen.blit(
+            pygame.transform.scale(self.native_screen, WINDOW_SIZE), (0, 0)
+        )
+
         pygame.display.update()
         

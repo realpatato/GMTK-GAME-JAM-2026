@@ -8,8 +8,6 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
-        self.sssf = 3
-        self.spritesheet = pygame.transform.scale_by(self.spritesheet, self.sssf)
 
     def enter(self, persistent_data):
         super().enter(persistent_data)

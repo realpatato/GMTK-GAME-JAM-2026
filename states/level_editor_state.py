@@ -1,7 +1,6 @@
 from .base_state import BaseState
 import pygame
-
-TILE_SIZE = 16 #pixels
+from constants import *
 
 class LevelEditorState(BaseState):
     def __init__(self):
@@ -32,7 +31,7 @@ class LevelEditorState(BaseState):
             (0, 0)
         )
         pygame.draw.rect(screen, (255,255,255), (self.cursor_x * TILE_SIZE, self.cursor_y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
-        
+
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
