@@ -1,0 +1,14 @@
+{
+    "name": "untitled",
+    "size": {
+        "width": 20,
+        "height": 12
+    },
+    "tiles": {
+        "4,3": "Ground",
+        "4,4": "Ground",
+        "5,4": "Ground",
+        "6,4": "Ground",
+        "7,4": "Ground"
+    }
+}
