@@ -8,7 +8,7 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
-        self.sssf = 2
+        self.sssf = 3
         self.spritesheet = pygame.transform.scale_by(self.spritesheet, self.sssf)
 
     def enter(self, persistent_data):
@@ -16,8 +16,8 @@ class PlayState(BaseState):
 
     def draw(self, screen):
         screen.fill((0, 255, 0))
-        bg = parser.Sprite(0, 0, 16, 16, self.sssf)
-        screen.blit(self.spritesheet, (0, 0), bg.rect())
+        bomby = parser.Sprite(0, 16, 32, 32, self.sssf)
+        screen.blit(self.spritesheet, (0, 0), bomby.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
