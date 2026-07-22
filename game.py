@@ -1,11 +1,16 @@
 import pygame
 
 class Game:
-    def __init__(self):
-        pygame.init()
+    def __init__(self, states):
         self.screen = pygame.display.set_mode((1000, 600))
         self.keep_playing = True
         self.clock = pygame.time.Clock()
+
+        #state that we start with
+        self.state_name = "PLAY"
+        self.states = states
+        self.state = self.states[self.state_name]
+        
     def loop(self):
         dt = 0
 
@@ -26,11 +31,21 @@ class Game:
             if event.type == pygame.QUIT:
                 self.keep_playing = False
 
+            self.state.handle_event(event)
+
     def update(self, dt):
-        print(dt)
+        if self.state.done: 
+            self.set_state()
+        self.state.update(dt) 
+                
+    def set_state(self):        
+        persistent_data = self.state.leave()
+        self.state_name = self.state.next_state
+        self.state = self.states[self.state_name]
+        self.state.enter(persistent_data)
 
     def draw(self):
         # draw things here
-
+        self.state.draw(self.screen)
         pygame.display.update()
         
