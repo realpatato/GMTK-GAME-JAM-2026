@@ -1,10 +1,10 @@
 import game
 import pygame
 
+pygame.init()
+
 from states.play_state import PlayState
 from states.level_editor_state import LevelEditorState
-
-pygame.init()
 
 game.Game({
     'play_state': PlayState(),
