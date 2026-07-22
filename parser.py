@@ -1,6 +1,6 @@
 class Sprite():
-    def __init__(self, x, y, w, h):
-        self.rects = [(x, y, w, h)]
+    def __init__(self, base_rect):
+        self.rects = [base_rect]
 
     def rect(self):
         return self.rects[0]
@@ -22,10 +22,11 @@ class Animation():
         return self.frames[self.current_frame_index % len(self.frames)]
 
 class AnimatedSprite(Sprite):
-    def __init__(self, x, y, w, h, ct, anims = {}, state = "None"):
-        super().__init__(x, y, w, h)
+    def __init__(self, base_rect, ct, anims = {}, state = "None"):
+        super().__init__(base_rect)
         for i in range(1, ct):
-            self.rects.append((x + w * i, y, w, h))
+            shift = base_rect[2] * i
+            self.rects.append([base_rect[0] + shift, base_rect[1], base_rect[2], base_rect[3]])
         self.state = state
         self.anims = anims
         if len(self.anims.items()) == 0:
