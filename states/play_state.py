@@ -2,6 +2,8 @@ from .base_state import BaseState
 import pygame
 import parser
 
+pygame.display.init()
+
 class PlayState(BaseState):
     def __init__(self):
         super().__init__()
@@ -14,7 +16,7 @@ class PlayState(BaseState):
 
     def draw(self, screen):
         screen.fill((0, 255, 0))
-        bg = parser.Sprite(0, 0, 16, 16, self.ssf)
+        bg = parser.Sprite(0, 0, 16, 16, self.sssf)
         screen.blit(self.spritesheet, (0, 0), bg.rect())
 
     def handle_event(self, event):

@@ -6,7 +6,12 @@ pygame.init()
 from states.play_state import PlayState
 from states.level_editor_state import LevelEditorState
 
-game.Game({
+g = game.Game()
+
+states = {
     'play_state': PlayState(),
     'level_editor_state': LevelEditorState(),
-}).loop()
+}
+
+g.begin(states, "play_state")
+g.loop()

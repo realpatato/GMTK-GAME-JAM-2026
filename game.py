@@ -1,13 +1,13 @@
 import pygame
 
 class Game:
-    def __init__(self, states):
+    def __init__(self):
         self.screen = pygame.display.set_mode((1000, 600))
         self.keep_playing = True
         self.clock = pygame.time.Clock()
 
-        #state that we start with
-        self.state_name = "play_state"
+    def begin(self, states, start_state):
+        self.state_name = start_state
         self.states = states
         self.state = self.states[self.state_name]
         
