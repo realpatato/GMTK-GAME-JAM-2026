@@ -1,7 +1,7 @@
 from .base_state import BaseState
 import pygame
 
-class PlayState(BaseState):
+class LevelEditorState(BaseState):
     def draw(self, screen):
         screen.fill((0, 0, 255))
 
