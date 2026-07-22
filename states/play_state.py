@@ -12,6 +12,25 @@ class PlayState(BaseState):
         self.player = player.Player()
         self.sprites = [self.player.sprite]
 
+    def update(self, dt):
+        self.player.h_move()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_d]:
+            self.player.inc_vel()
+            self.player.sprite.state = "r_walk"
+        elif keys[pygame.K_a]:
+            self.player.inc_vel()
+            self.player.sprite.state = "l_walk"
+        
+        if round(self.player.x_vel, 1) != 0:
+            self.player.inc_vel()
+        else:
+            if self.player.x_accel < 0:
+                self.player.sprite.state = "r_idle"
+            else:
+                self.player.sprite.state = "l_idle"
+            
+
     def enter(self, persistent_data):
         super().enter(persistent_data)
 
@@ -20,13 +39,25 @@ class PlayState(BaseState):
         for sprite in self.sprites:
             if type(sprite) == parser.AnimatedSprite:
                 sprite.advance()
-            screen.blit(self.spritesheet, (0, 0), sprite.rect())
+            screen.blit(self.spritesheet, self.player.pos, sprite.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
+            if event.key == pygame.K_ESCAPE:
                 self.next_state = "level_editor_state"
                 self.done = True
 
             if event.key == pygame.K_d:
-                self.player.sprite.state = "idle" if self.player.sprite.state == "walk" else "walk"
+                self.player.x_accel = 0.1
+                self.player.sprite.state = "r_walk"
+
+            if event.key == pygame.K_a:
+                self.player.x_accel = -0.1
+                self.player.sprite.state = "l_walk"
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_d:
+                self.player.x_accel = -0.05
+
+            if event.key == pygame.K_a:
+                self.player.x_accel = 0.05

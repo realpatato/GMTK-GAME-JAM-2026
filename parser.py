@@ -11,6 +11,7 @@ class Animation():
         self.ct = 0
         self.frame_time = frame_time
         self.current_frame_index = 0
+        self.reversed = False
 
     def advance(self):
         self.ct += 1
@@ -37,7 +38,6 @@ class AnimatedSprite(Sprite):
                 for i in self.anims[key][0]:
                     frames.append(self.rects[i])
                 self.anims[key] = Animation(frames, self.anims[key][1])
-                print(self.anims)
 
     def advance(self):
         self.anims[self.state].advance()
