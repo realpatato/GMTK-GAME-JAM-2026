@@ -4,7 +4,7 @@ import parser
 
 class PlayState(BaseState):
     def start(self, persistent_data):
-        super.start(persistent_data)
+        super().start(persistent_data)
 
     def draw(self, screen):
         screen.fill((0, 255, 0))
