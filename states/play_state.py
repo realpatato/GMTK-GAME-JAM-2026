@@ -8,7 +8,7 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
-        bomby = parser.AnimatedSprite(0, 16, 32, 32, 4, {"idle" : ((0, 2), 10)}, "idle")
+        bomby = parser.AnimatedSprite(0, 16, 32, 32, 4, {"idle" : ((0, 2), 10), "walk" : ((1, 2, 3), 10)}, "idle")
         self.animated_sprites = [bomby]
         self.sprites = [bomby]
 
@@ -27,3 +27,6 @@ class PlayState(BaseState):
             if event.key == pygame.K_w:
                 self.next_state = "level_editor_state"
                 self.done = True
+
+            if event.key == pygame.K_d:
+                self.animated_sprites[0].state = "idle" if self.animated_sprites[0].state == "walk" else "walk"
