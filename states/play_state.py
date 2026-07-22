@@ -1,9 +1,11 @@
 from .base_state import BaseState
 import pygame
+import parser
 
 class PlayState(BaseState):
     def draw(self, screen):
         screen.fill((0, 255, 0))
+        screen.blit(parser.parse())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:

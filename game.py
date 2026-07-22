@@ -7,7 +7,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         #state that we start with
-        self.state_name = "PLAY"
+        self.state_name = "play"
         self.states = states
         self.state = self.states[self.state_name]
         
