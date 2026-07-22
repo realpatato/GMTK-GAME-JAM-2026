@@ -88,7 +88,7 @@ class LevelEditorState(BaseState):
                 self.done = True
 
             if event.key == pygame.K_RETURN:
-                self.level.save(self.level.name)
+                self.level.save()
 
         if event.type == pygame.MOUSEMOTION:
             # event.rel returns the (x, y) distance moved since the last event

@@ -31,16 +31,36 @@ class Level():
                 )
             #screen.blit
 
-    def save(self, filename):
-        dir_path = Path('assets/rooms')
-        dir_path.mkdir(parents=True, exist_ok=True)
+    @classmethod
+    def load(cls, filename):
+        path = _get_path(filename)
 
-        path = f'assets/rooms/{filename}.json'
+        level_data = None
+        with open(path, 'w') as f:
+            level_data = json.load(f)
+        if level_data:
+            return cls(
+                w= level_data["size"]["width"], 
+                h= level_data["size"]["height"], 
+                tiles= level_data["tiles"], 
+                name= level_data["name"]
+            )
+        else:
+            print('could not load file')
+
+    def save(self):
+        path = _get_path(self.name)
 
         with open(path, 'w') as f:
             json.dump({
-                "name": filename,
+                "name": self.name,
                 "size": { "width": self.w, "height": self.h },
                 "tiles": self.tiles
             }, f, indent=4) 
         print('saved to '+path)
+
+def _get_path(filename):
+    dir_path = Path('assets/rooms')
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+    return f'assets/rooms/{filename}.json'
