@@ -5,7 +5,7 @@ from constants import *
 class LevelEditorState(BaseState):
     def __init__(self):
         super().__init__()
-        self.font = pygame.font.SysFont('Arial', 30)
+        self.font = pygame.font.Font('assets/Bomby.ttf', 16)
 
         self.cursor_x = 0
         self.cursor_y = 0
@@ -15,10 +15,8 @@ class LevelEditorState(BaseState):
 
     def update(self, dt):
         self.cursor_x, self.cursor_y = [
-            x // TILE_SIZE for x in pygame.mouse.get_pos()
+            (x / SCALE_FACTOR) // TILE_SIZE for x in pygame.mouse.get_pos()
         ]
-
-        print(self.cursor_x, self.cursor_y)
 
     def draw(self, screen):
         screen.fill((0, 0, 0))
@@ -30,10 +28,19 @@ class LevelEditorState(BaseState):
             ),
             (0, 0)
         )
-        pygame.draw.rect(screen, (255,255,255), (self.cursor_x * TILE_SIZE, self.cursor_y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+
+        rect_surface = pygame.Surface((TILE_SIZE, TILE_SIZE), pygame.SRCALPHA)
+        rect_surface.fill((255, 255, 255, 128)) 
+        screen.blit(
+            rect_surface, 
+            (
+                self.cursor_x * TILE_SIZE, 
+                self.cursor_y * TILE_SIZE, 
+            )
+        )
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w:
+            if event.key == pygame.K_ESCAPE:
                 self.next_state = "play_state"
                 self.done = True
