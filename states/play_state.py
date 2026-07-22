@@ -8,7 +8,7 @@ class PlayState(BaseState):
 
     def draw(self, screen):
         screen.fill((0, 255, 0))
-        screen.blit(parser.parse())
+        screen.blit(parser.parse(), (0, 0))
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
