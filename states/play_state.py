@@ -1,5 +1,6 @@
 from .base_state import BaseState
 import pygame
+import level
 import parser
 import player
 
@@ -9,6 +10,7 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
+        self.level = level.Level.load("test")
         self.player = player.Player()
         self.sprites = [self.player.sprite]
 
@@ -37,7 +39,7 @@ class PlayState(BaseState):
         for sprite in self.sprites:
             if type(sprite) == parser.AnimatedSprite:
                 sprite.advance()
-            screen.blit(self.spritesheet, self.player.pos, sprite.rect())
+            screen.blit(self.spritesheet, self.player.rect, sprite.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
