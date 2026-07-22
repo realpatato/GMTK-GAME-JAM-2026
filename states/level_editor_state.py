@@ -73,7 +73,7 @@ class LevelEditorState(BaseState):
         #info text
         screen.blit(
             self.font.render(
-                f'Level (width: {self.level.w}, height: {self.level.h})', 
+                f'{self.level.name} (width: {self.level.w}, height: {self.level.h})', 
                 True, 
                 (255, 255, 255)
             ),
