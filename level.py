@@ -22,12 +22,16 @@ class Level():
     def get_tiles_and_rects(self):
         sprites = []
         rects = []
-        for pos, tiletype in self.tiles.items():
-            x, y = [int(x) for x in pos.split(",")]
-
-            if tiletype == "Ground":
-                rects.append(pygame.Rect([x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE]))
-                sprites.append(Sprite([32, 0, 16, 16]))
+        for r in range(self.w):
+            for c in range(self.h):
+                key = str(r) + "," + str(c)
+                if key in self.tiles.keys():
+                    if self.tiles[key] == "Ground":
+                        rects.append(pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, TILE_SIZE, TILE_SIZE]))
+                        sprites.append(Sprite([32, 0, 16, 16]))
+                else:
+                    rects.append(pygame.Rect(r * TILE_SIZE, c * TILE_SIZE, 0, 0))
+                    sprites.append(Sprite([0, 0, 16, 16]))
 
         return sprites, rects
 
