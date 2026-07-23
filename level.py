@@ -58,6 +58,10 @@ class Level():
                 elif tile.type == "Enter":
                     pygame.draw.rect(screen, (0, 255, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, TILE_SIZE, TILE_SIZE))
 
+    def shift(self, x,y):
+        self.tile_offset = (x, y)
+        self.tiles = self.get_tiles()
+
     @classmethod
     def load(cls, path, offset=(0,0)):
         level_data = None
