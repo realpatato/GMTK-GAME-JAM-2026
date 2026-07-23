@@ -29,6 +29,14 @@ class Level():
                         rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, TILE_SIZE, TILE_SIZE])
                         sprite = Sprite([32, 0, 16, 16])
                         tiles.append(Tile(rect, sprite, "Ground"))
+                    if self.tile_data[key] == "Enter":
+                        rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, 0, 0])
+                        sprite = Sprite([0, 0, 16, 16])
+                        tiles.append(Tile(rect, sprite, "Enter"))
+                    if self.tile_data[key] == "Exit":
+                        rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, 0, 0])
+                        sprite = Sprite([0, 0, 16, 16])
+                        tiles.append(Tile(rect, sprite, "Exit"))
                 else:
                     rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, 0, 0])
                     sprite = Sprite([0, 0, 16, 16])
@@ -36,10 +44,15 @@ class Level():
 
         return tiles
 
-    def draw(self, screen, off_x = 0, off_y = 0):
+    def draw(self, screen, off_x = 0, off_y = 0, edit = False):
         tiles = self.get_tiles()
         for tile in tiles:
             screen.blit(self.spritesheet, (tile.rect[0] + off_x, tile.rect[1] + off_y), tile.sprite.rect())
+            if edit:
+                if tile.type == "Exit":
+                    pygame.draw.rect(screen, (255, 0, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, tile.rect[2], tile.rect[3]))
+                elif tile.type == "Enter":
+                    pygame.draw.rect(screen, (0, 255, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, tile.rect[2], tile.rect[3]))
 
     @classmethod
     def load(cls, path):

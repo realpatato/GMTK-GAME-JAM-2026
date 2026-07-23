@@ -59,7 +59,7 @@ class LevelEditorState(BaseState):
         screen.fill((0, 0, 0))
 
         #draw levle
-        self.level.draw(screen, math.floor(self.cam_x), math.floor(self.cam_y))
+        self.level.draw(screen, math.floor(self.cam_x), math.floor(self.cam_y), True)
 
         # cursor 
         rect_surface = pygame.Surface((TILE_SIZE, TILE_SIZE), pygame.SRCALPHA)
