@@ -82,7 +82,7 @@ class PlayState(BaseState):
         super().enter(persistent_data)
 
     def draw(self, screen):
-        screen.fill((0, 255, 0))
+        screen.fill((75, 61, 68))
         for level in self.levels:
             level.draw(screen, self.cam_x, self.cam_y)
         pygame.draw.rect(
