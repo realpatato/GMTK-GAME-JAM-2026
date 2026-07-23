@@ -135,6 +135,10 @@ class LevelEditorState(BaseState):
                     self.level = Level.load(file_path)
                     if self.level.name != "untitled":
                         self.gui["level title"].text = self.level.name
+                    if self.level.w != "20":
+                        self.gui["level width"].text = str(self.level.w)
+                    if self.level.h != "12":
+                        self.gui["level height"].text = str(self.level.h)
                 else: print("something went wrong ok?")
 
             if event.key == pygame.K_RETURN:

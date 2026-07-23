@@ -1,11 +1,12 @@
 from .base_state import BaseState
 from constants import *
 import pygame
-import level
 import parser
 import player
 import level
 import tile
+import enemy
+import floor
 
 pygame.display.init()
 
@@ -13,10 +14,7 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
-        self.levels = [
-            level.Level.load("assets/rooms/test.json"),
-            level.Level.load("assets/rooms/big drop.json", (20, 0))
-        ]
+        self.floor = floor.Floor(5)
         self.player = player.Player()
 
         self.cam_x = 0
@@ -26,8 +24,8 @@ class PlayState(BaseState):
 
     def update(self, dt):
         self.player.v_move()
-        for level in self.levels:
-            tiles = level.tiles
+        for room in self.floor.rooms:
+            tiles = room.tiles
 
             torches = [torch for torch in tiles if isinstance(torch, tile.Torch)]
 
@@ -47,8 +45,8 @@ class PlayState(BaseState):
                         enemy.handle_y_collide(y_collide.rect)
 
         self.player.h_move()
-        for level in self.levels:
-            tiles = level.tiles
+        for room in self.floor.rooms:
+            tiles = room.tiles
 
             torches = [torch for torch in tiles if isinstance(torch, tile.Torch)]
 
@@ -100,8 +98,8 @@ class PlayState(BaseState):
         self.player.inc_y_vel()
         self.player.y_accel = 0.1    
 
-        for level in self.levels:
-            torches = [torch for torch in level.tiles if isinstance(torch, tile.Torch)]
+        for room in self.floor.rooms:
+            torches = [torch for torch in room.tiles if isinstance(torch, tile.Torch)]
             
             for torch in torches:
                 for enemy in torch.enemies:
@@ -114,15 +112,16 @@ class PlayState(BaseState):
 
     def draw(self, screen):
         screen.fill((75, 61, 68))
-        for level in self.levels:
-            level.draw(screen, self.cam_x, self.cam_y)
-
-            torches = [torch for torch in level.tiles if isinstance(torch, tile.Torch)]
+                    
+        self.floor.draw(screen, self.cam_x, self.cam_y)
+        for room in self.floor.rooms:
+            torches = [torch for torch in room.tiles if isinstance(torch, tile.Torch)]
             for torch in torches:
                 for enemy in torch.enemies:
                     enemy.advance()
                     screen.blit(self.spritesheet, enemy.rect.move(self.cam_x, self.cam_y), enemy.sprite.rect())
-                    
+
+
         pygame.draw.rect(
             screen, 
             (255, 0, 0), 
