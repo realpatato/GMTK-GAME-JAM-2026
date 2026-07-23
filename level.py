@@ -11,7 +11,17 @@ class Level():
         self.w = w
         self.h = h
         self.name = name
+        self.ground_rects = self.get_ground_rects()
 
+    def get_ground_rects(self):
+        rects = []
+        for pos, tiletype in self.tiles.items():
+            x, y = [int(x) for x in pos.split(",")]
+
+            if tiletype == "Ground":
+                rects.append(pygame.Rect([x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE]))
+
+        return rects
 
     def draw(self, screen, off_x = 0, off_y = 0):
         for pos, tiletype in self.tiles.items():

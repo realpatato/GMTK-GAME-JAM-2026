@@ -4,7 +4,6 @@ import level
 import parser
 import player
 import level
-import json
 
 pygame.display.init()
 
@@ -12,12 +11,18 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
-        self.level = level.Level.load("test")
+        self.level = level.Level.load("assets/rooms/test.json")
         self.player = player.Player()
         self.sprites = [self.player.sprite]
 
     def update(self, dt):
         self.player.h_move()
+
+        x_collide = self.player.collision_hitbox.collidelist(self.level.ground_rects)
+
+        if x_collide != -1:
+            self.player.handle_x_collide(self.level.ground_rects[x_collide])
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d]:
             self.player.inc_vel()
@@ -38,6 +43,7 @@ class PlayState(BaseState):
 
     def draw(self, screen):
         screen.fill((0, 255, 0))
+        self.level.draw(screen)
         for sprite in self.sprites:
             if type(sprite) == parser.AnimatedSprite:
                 sprite.advance()
