@@ -2,6 +2,8 @@ import math
 
 TILE_SIZE = 16 #pixels
 
+TILE_TYPES = ["Ground", "Enter", "Exit"]
+
 SCALE_FACTOR = 3
 WINDOW_SIZE = (1280,720)
 

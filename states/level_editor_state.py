@@ -18,7 +18,7 @@ class LevelEditorState(BaseState):
         }
         self.focused_gui = None
 
-        self.tile_type = "Ground"
+        self.tile_type_i = 0
 
         self.cursor_x = 0
         self.cursor_y = 0
@@ -50,7 +50,7 @@ class LevelEditorState(BaseState):
                 key = f'{x},{y}'
                 mouse_buttons = pygame.mouse.get_pressed()
                 if mouse_buttons[0]:
-                    self.level.tile_data[key] = self.tile_type
+                    self.level.tile_data[key] = TILE_TYPES[self.tile_type_i % len(TILE_TYPES)]
                 if mouse_buttons[2]:
                     if key in self.level.tile_data:
                         del self.level.tile_data[key]
@@ -78,6 +78,8 @@ class LevelEditorState(BaseState):
         screen.blit(self.font.render("name:", True, (255, 255, 255)),(0, 1))
         screen.blit(self.font.render("width:", True, (255, 255, 255)),(90, 1))
         screen.blit(self.font.render("height:", True, (255, 255, 255)),(150, 1))
+
+        screen.blit(self.font.render("tile type: "+TILE_TYPES[self.tile_type_i % len(TILE_TYPES)], True, (255, 255, 255)),(150, 16))
 
         for elmnt in self.gui.values():
             elmnt.draw(screen, self.focused_gui == elmnt)
@@ -111,6 +113,15 @@ class LevelEditorState(BaseState):
             if event.key == pygame.K_ESCAPE:
                 self.next_state = "play_state"
                 self.done = True
+
+            if event.key == pygame.K_UP:
+                self.tile_type_i+=1
+            if event.key == pygame.K_DOWN:
+                self.tile_type_i-=1
+
+            #load
+            if event.key == pygame.K_BACKSLASH:
+                pass#self.level.save()
 
             if event.key == pygame.K_RETURN:
                 self.level.save()
