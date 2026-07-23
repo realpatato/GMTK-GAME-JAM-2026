@@ -1,4 +1,5 @@
 from .base_state import BaseState
+from constants import *
 import pygame
 import level
 import parser
@@ -22,6 +23,8 @@ class PlayState(BaseState):
 
         self.cam_x = 0
         self.cam_y = 0
+        self.cam_x_off = 0
+        self.cam_y_off = 0
 
     def update(self, dt):
         self.player.v_move()
@@ -53,16 +56,24 @@ class PlayState(BaseState):
                 x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
                 if x_collide:
                     self.enemy.handle_x_collide(x_collide.rect)
+        #camera
+        cam_destination = (
+            -self.player.rect.x + self.cam_x_off + (NATIVE_RESOLUTION[0] / SCALE_FACTOR),
+            -self.player.rect.y + self.cam_y_off + (NATIVE_RESOLUTION[1] / SCALE_FACTOR),
+        )
+        cam_speed = 0.085
+        self.cam_x += (cam_destination[0] - self.cam_x) * cam_speed
+        self.cam_y += (cam_destination[1] - self.cam_y) * cam_speed
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_l]:
-            self.cam_x-=5
+            self.cam_x_off-=5
         if keys[pygame.K_j]:
-            self.cam_x+=5
+            self.cam_x_off+=5
         if keys[pygame.K_i]:
-            self.cam_y-=5
+            self.cam_y_off+=5
         if keys[pygame.K_k]:
-            self.cam_y+=5
+            self.cam_y_off-=5
 
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.player.inc_x_vel()
@@ -89,7 +100,7 @@ class PlayState(BaseState):
         super().enter(persistent_data)
 
     def draw(self, screen):
-        screen.fill((0, 255, 0))
+        screen.fill((75, 61, 68))
         for level in self.levels:
             level.draw(screen, self.cam_x, self.cam_y)
         pygame.draw.rect(
@@ -99,11 +110,11 @@ class PlayState(BaseState):
             2
         )
         self.player.sprite.advance()
-        screen.blit(self.spritesheet, self.player.rect, self.player.sprite.rect())
+        screen.blit(self.spritesheet, self.player.rect.move(self.cam_x,self.cam_y), self.player.sprite.rect())
         for enemy in self.enemies:
             enemy.advance()
             pygame.draw.rect(screen, (255, 0, 0), enemy.hitbox, 2)
-            screen.blit(self.spritesheet, enemy.rect, enemy.sprite.rect())
+            screen.blit(self.spritesheet, enemy.rect.move(self.cam_x,self.cam_y), enemy.sprite.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
