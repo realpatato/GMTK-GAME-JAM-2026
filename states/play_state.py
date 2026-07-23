@@ -16,22 +16,19 @@ class PlayState(BaseState):
         self.sprites = [self.player.sprite]
 
     def update(self, dt):
-        self.player.h_move()
-
-        x_collide = self.player.collision_hitbox.collidelist(self.level.ground_rects)
-
-        if x_collide != -1:
-            self.player.handle_x_collide(self.level.ground_rects[x_collide])
-
         self.player.v_move()
-        self.player.inc_y_vel()
 
         y_collide = self.player.collision_hitbox.collidelist(self.level.ground_rects)
 
         if y_collide != -1:
             self.player.handle_y_collide(self.level.ground_rects[y_collide])
 
-        self.player.y_accel = 0.1
+        self.player.h_move()
+
+        x_collide = self.player.collision_hitbox.collidelist(self.level.ground_rects)
+
+        if x_collide != -1:
+            self.player.handle_x_collide(self.level.ground_rects[x_collide])
 
         keys = pygame.key.get_pressed()
 
@@ -48,6 +45,8 @@ class PlayState(BaseState):
                     self.player.sprite.state = "r_idle"
                 else:
                     self.player.sprite.state = "l_idle"
+        self.player.inc_y_vel()
+        self.player.y_accel = 0.1    
             
     def enter(self, persistent_data):
         super().enter(persistent_data)
@@ -76,7 +75,9 @@ class PlayState(BaseState):
                 self.player.sprite.state = "l_walk"
 
             if event.key == pygame.K_w or event.key == pygame.K_SPACE:
-                self.player.y_accel = -5
+                if self.player.grounded:
+                    self.player.y_accel = -5
+                self.player.grounded = False
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_d:
@@ -88,4 +89,5 @@ class PlayState(BaseState):
                     self.player.x_accel = 0.05
 
             if event.key == pygame.K_w or event.key == pygame.K_SPACE:
-                self.player.y_vel = 0
+                if self.player.y_vel < 0:
+                    self.player.y_vel = 0

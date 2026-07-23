@@ -17,8 +17,9 @@ class Player():
         self.x_vel = 0
 
         self.max_y_vel = 5
-        self.y_accel = 0.5
+        self.y_accel = 0
         self.y_vel = 0
+        self.grounded = False
 
     def inc_x_vel(self):
         self.x_vel += self.x_accel
@@ -59,6 +60,7 @@ class Player():
     def handle_y_collide(self, rect):
             if self.y_vel > 0:
                 self.collision_hitbox.bottom = rect.top
+                self.grounded = True
             if self.y_vel < 0:
                 self.collision_hitbox.top = rect.bottom
             self.y_vel = 0
