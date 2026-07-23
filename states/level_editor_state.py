@@ -36,6 +36,8 @@ class LevelEditorState(BaseState):
 
     def update(self, dt):
 
+        self.level.tiles = self.level.get_tiles()
+
         if self.focused_gui:
             self.focused_gui.update(dt)
         self.level.name = self.gui["level title"].get_value() or "untitled"
