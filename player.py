@@ -19,6 +19,7 @@ class Player():
         self.max_y_vel = 5
         self.y_accel = 0
         self.y_vel = 0
+        
         self.grounded = False
 
     def inc_x_vel(self):
@@ -58,15 +59,15 @@ class Player():
         self.damage_hitbox.x = self.rect.x + self.damage_hitbox_offsets[0]
 
     def handle_y_collide(self, rect):
-            if self.y_vel > 0:
-                self.collision_hitbox.bottom = rect.top
-                self.grounded = True
-            if self.y_vel < 0:
-                self.collision_hitbox.top = rect.bottom
-            self.y_vel = 0
-            #update hitboxes
-            self.rect.y = self.collision_hitbox.y - self.collision_hitbox_offsets[1]
-            self.damage_hitbox.y = self.rect.y + self.damage_hitbox_offsets[1]
+        if self.y_vel > 0:
+            self.collision_hitbox.bottom = rect.top
+            self.grounded = True
+        if self.y_vel < 0:
+            self.collision_hitbox.top = rect.bottom
+        self.y_vel = 0
+        #update hitboxes
+        self.rect.y = self.collision_hitbox.y - self.collision_hitbox_offsets[1]
+        self.damage_hitbox.y = self.rect.y + self.damage_hitbox_offsets[1]
 
     def gen_sprite(self):
         anims = {"r_idle" : ((0, 2), 10), "r_walk" : ((1, 2, 3), 10), "l_idle" : ((7, 5), 10), "l_walk" : ((6, 5, 4), 10)}

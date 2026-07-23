@@ -98,8 +98,9 @@ class PlayState(BaseState):
                     self.player.sprite.state = "r_idle"
                 else:
                     self.player.sprite.state = "l_idle"
+        
         self.player.inc_y_vel()
-        self.player.y_accel = 0.1    
+        self.player.y_accel = 0.1
 
         for room in self.floor.rooms:
             torches = room.torches
