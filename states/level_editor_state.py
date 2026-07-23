@@ -133,10 +133,15 @@ class LevelEditorState(BaseState):
                 file_path = filedialog.askopenfilename()
                 if isinstance(file_path, str):
                     self.level = Level.load(file_path)
+                    if self.level.name != "untitled":
+                        self.gui["level title"].text = self.level.name
                 else: print("something went wrong ok?")
 
             if event.key == pygame.K_RETURN:
                 self.level.save()
+
+        if event.type == pygame.MOUSEWHEEL:
+            self.tile_type_i+=event.y
 
         if event.type == pygame.MOUSEMOTION:
             # event.rel returns the (x, y) distance moved since the last event
