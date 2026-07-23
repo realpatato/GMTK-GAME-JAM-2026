@@ -15,33 +15,45 @@ class Floor:
         dir_path.mkdir(parents=True, exist_ok=True)
 
         files = [entry for entry in dir_path.iterdir() if entry.is_file()]
+
+        total_x_off = 0
+        total_y_off = 0
         for i in range(room_count):
             random_room_file = random.choice(files)
 
-            unpositioned_room = level.Level.load(random_room_file)
+            room = level.Level.load(random_room_file)
 
-            total_x_off = 0
-            total_y_off = 0
+            #subtract our position
+            exit_pos = [
+                int(x) for x in
+                next((k for k, v in room.tile_data.items() if v == "Exit"), None)
+                .split(",")
+            ]
+            enter_pos = [
+                int(x) for x in
+                next((k for k, v in room.tile_data.items() if v == "Enter"), None)
+                .split(",")
+            ]
 
-            # offset for each previous room that exists
-            for i in range(len(self.rooms)-1):
-                l_room = self.rooms[i]
-                r_room = self.rooms[i+1]
+            room.shift(total_x_off, total_y_off)
+            total_x_off += exit_pos[0] + 1
+            if (i > 0 and self.rooms[i-1]):
+                old_room = self.rooms[i-1]
+                old_exit_pos = [
+                    int(x) for x in
+                    next((k for k, v in old_room.tile_data.items() if v == "Exit"), None)
+                    .split(",")
+                ]
+                old_enter_pos = [
+                    int(x) for x in
+                    next((k for k, v in old_room.tile_data.items() if v == "Enter"), None)
+                    .split(",")
+                ]
+                total_y_off += enter_pos[1] - old_exit_pos[1]
 
-                exit_pos = next((k for k, v in l_room.tile_data.items() if v == "Exit"), None)
-                enter_pos = next((k for k, v in r_room.tile_data.items() if v == "Enter"), None)
+            #add our positions
 
-                enter_x, enter_y = [int(x) for x in enter_pos.split(",")]
-                exit_x, exit_y = [int(x) for x in exit_pos.split(",")]
-
-                total_x_off += (exit_x + 1) - enter_x
-                total_y_off += (exit_y) - enter_y
-
-                print(f'{enter_x}]{enter_y}')
-                print(f'{exit_x}]{exit_y}')
-
-            unpositioned_room.shift(total_x_off, total_y_off)
-            self.rooms.append(unpositioned_room)
+            self.rooms.append(room)
 
             print(random_room_file)  # Prints the full path to the file
         
