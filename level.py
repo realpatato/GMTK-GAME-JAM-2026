@@ -25,23 +25,23 @@ class Level():
         for r in range(self.w):
             for c in range(self.h):
                 key = str(r) + "," + str(c)
-                r += self.tile_offset[0]
-                c += self.tile_offset[1]
+                y = r + self.tile_offset[0]
+                x = c + self.tile_offset[1]
                 if key in self.tile_data.keys():
                     if self.tile_data[key] == "Ground":
-                        rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, TILE_SIZE, TILE_SIZE])
+                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, TILE_SIZE, TILE_SIZE])
                         sprite = Sprite([32, 0, 16, 16])
                         tiles.append(Tile(rect, sprite, "Ground"))
                     if self.tile_data[key] == "Enter":
-                        rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, 0, 0])
+                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                         sprite = Sprite([0, 0, 16, 16])
                         tiles.append(Tile(rect, sprite, "Enter"))
                     if self.tile_data[key] == "Exit":
-                        rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, 0, 0])
+                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                         sprite = Sprite([0, 0, 16, 16])
                         tiles.append(Tile(rect, sprite, "Exit"))
                 else:
-                    rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, 0, 0])
+                    rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                     sprite = Sprite([0, 0, 16, 16])
                     tiles.append(Tile(rect, sprite, "None"))
 
