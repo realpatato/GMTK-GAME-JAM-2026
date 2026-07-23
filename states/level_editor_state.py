@@ -3,6 +3,11 @@ from level import Level
 import pygame
 from gui import *
 from constants import *
+import tkinter as tk
+from tkinter import filedialog
+
+root = tk.Tk()
+root.withdraw()
 
 class LevelEditorState(BaseState):
     def __init__(self):
@@ -121,7 +126,10 @@ class LevelEditorState(BaseState):
 
             #load
             if event.key == pygame.K_BACKSLASH:
-                pass#self.level.save()
+                file_path = filedialog.askopenfilename()
+                if isinstance(file_path, str):
+                    self.level = Level.load(file_path)
+                else: print("something went wrong ok?")
 
             if event.key == pygame.K_RETURN:
                 self.level.save()
