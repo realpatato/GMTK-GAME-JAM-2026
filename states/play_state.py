@@ -1,12 +1,10 @@
 from .base_state import BaseState
 from constants import *
 import pygame
-import parser
 import player
-import level
 import tile
-import enemy
 import floor
+import timer
 
 pygame.display.init()
 
@@ -17,12 +15,16 @@ class PlayState(BaseState):
         self.floor = floor.Floor(5)
         self.player = player.Player()
 
+        self.timer = timer.Timer()
+
         self.cam_x = 0
         self.cam_y = 0
         self.cam_x_off = 0
         self.cam_y_off = 0
 
     def update(self, dt):
+        self.timer.decrease(dt)
+
         self.player.v_move()
         for room in self.floor.rooms:
             tiles = room.tiles
@@ -121,6 +123,9 @@ class PlayState(BaseState):
                     enemy.advance()
                     screen.blit(self.spritesheet, enemy.rect.move(self.cam_x, self.cam_y), enemy.sprite.rect())
 
+        timer_display = self.timer.get_display()
+        timer_rect = timer_display.get_rect(center=(NATIVE_RESOLUTION[0] // 2, 32))
+        screen.blit(timer_display, timer_rect)
 
         pygame.draw.rect(
             screen, 

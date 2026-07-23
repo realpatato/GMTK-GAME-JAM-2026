@@ -3,7 +3,7 @@ from constants import *
 
 class Game:
     def __init__(self):
-        self.screen = pygame.display.set_mode((1000, 600))
+        self.screen = pygame.display.set_mode(WINDOW_SIZE)
         self.native_screen = pygame.Surface(NATIVE_RESOLUTION)
         self.keep_playing = True
         self.clock = pygame.time.Clock()
