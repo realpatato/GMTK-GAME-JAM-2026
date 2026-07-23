@@ -116,6 +116,13 @@ class PlayState(BaseState):
         screen.fill((75, 61, 68))
         for level in self.levels:
             level.draw(screen, self.cam_x, self.cam_y)
+
+            torches = [torch for torch in level.tiles if isinstance(torch, tile.Torch)]
+            for torch in torches:
+                for enemy in torch.enemies:
+                    enemy.advance()
+                    screen.blit(self.spritesheet, enemy.rect.move(self.cam_x, self.cam_y), enemy.sprite.rect())
+                    
         pygame.draw.rect(
             screen, 
             (255, 0, 0), 

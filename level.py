@@ -39,7 +39,8 @@ class Level():
                     if self.tile_data[key] == "Torch":
                         rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                         sprite = Sprite([16, 0, 16, 16])
-                        tiles.append(Torch(rect, sprite, "Torch"))
+                        tiles.append(Tile(rect, Sprite([0, 0, 16, 16]), "None"))
+                        tiles.append(Torch(rect, sprite, "Torch"))         
                 else:
                     rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                     sprite = Sprite([0, 0, 16, 16])
@@ -51,10 +52,6 @@ class Level():
         tiles = self.tiles
         for tile in tiles:
             screen.blit(self.spritesheet, (tile.rect[0] + off_x, tile.rect[1] + off_y), tile.sprite.rect())
-            if type(tile) == Torch:
-                for enemy in tile.enemies:
-                    enemy.advance()
-                    screen.blit(self.spritesheet, enemy.rect.move(off_x, off_y), enemy.sprite.rect())
             if edit:
                 if tile.type == "Exit":
                     pygame.draw.rect(screen, (255, 0, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, TILE_SIZE, TILE_SIZE))
