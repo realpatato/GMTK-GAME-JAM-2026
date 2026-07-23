@@ -18,17 +18,17 @@ class PlayState(BaseState):
     def update(self, dt):
         self.player.v_move()
 
-        y_collide = self.player.collision_hitbox.collidelist(self.level.rects)
+        y_collide = self.player.collision_hitbox.collideobjects(self.level.tile_objs, key=lambda o : o.rect)
 
-        if y_collide != -1:
-            self.player.handle_y_collide(self.level.rects[y_collide])
+        if y_collide:
+            self.player.handle_y_collide(y_collide.rect)
 
         self.player.h_move()
 
-        x_collide = self.player.collision_hitbox.collidelist(self.level.rects)
+        x_collide = self.player.collision_hitbox.collideobjects(self.level.tile_objs, key=lambda o : o.rect)
 
-        if x_collide != -1:
-            self.player.handle_x_collide(self.level.rects[x_collide])
+        if x_collide:
+            self.player.handle_x_collide(x_collide.rect)
 
         keys = pygame.key.get_pressed()
 
