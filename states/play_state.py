@@ -6,6 +6,7 @@ import parser
 import player
 import enemy
 import level
+import tile
 
 pygame.display.init()
 
@@ -32,6 +33,11 @@ class PlayState(BaseState):
             enemy.v_move()
         for level in self.levels:
             tiles = level.get_tiles()
+
+            torches = [torch for torch in tiles if isinstance(torch, tile.Torch)]
+
+            for torch in torches:
+                torch.tick(dt)
 
             y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
             if y_collide:

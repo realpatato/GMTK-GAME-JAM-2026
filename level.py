@@ -3,12 +3,7 @@ import json
 from constants import *
 from pathlib import Path
 from parser import Sprite
-
-class Tile():
-    def __init__(self, rect, sprite, type):
-        self.rect = rect
-        self.sprite = sprite
-        self.type = type
+from tile import Tile
 
 class Level():
     def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled', tile_offset = (0, 0)):
@@ -40,6 +35,10 @@ class Level():
                         rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                         sprite = Sprite([0, 0, 16, 16])
                         tiles.append(Tile(rect, sprite, "Exit"))
+                    if self.tile_data[key] == "Torch":
+                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
+                        sprite = Sprite([16, 0, 16, 16])
+                        tiles.append(Tile(rect, sprite, "Torch"))
                 else:
                     rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                     sprite = Sprite([0, 0, 16, 16])
