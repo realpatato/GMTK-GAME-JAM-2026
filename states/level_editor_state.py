@@ -124,6 +124,10 @@ class LevelEditorState(BaseState):
             if event.key == pygame.K_DOWN:
                 self.tile_type_i-=1
 
+                #clear
+            if event.key == pygame.K_0:
+                self.level = Level()
+
             #load
             if event.key == pygame.K_BACKSLASH:
                 file_path = filedialog.askopenfilename()
