@@ -11,27 +11,41 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
-        self.level = level.Level.load("assets/rooms/test.json")
+        self.levels = [
+            level.Level.load("assets/rooms/test.json"),
+            level.Level.load("assets/rooms/big drop.json", (20, 0))
+        ]
         self.player = player.Player()
         self.sprites = [self.player.sprite]
 
+        self.cam_x = 0
+        self.cam_y = 0
+
     def update(self, dt):
-        self.player.v_move()
+        
 
-        tiles = self.level.get_tiles()
-        y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+        for level in self.levels:
+            tiles = level.get_tiles()
 
-        if y_collide:
-            self.player.handle_y_collide(y_collide.rect)
+            self.player.v_move()
+            y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+            if y_collide:
+                self.player.handle_y_collide(y_collide.rect)
 
-        self.player.h_move()
-
-        x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
-
-        if x_collide:
-            self.player.handle_x_collide(x_collide.rect)
+            self.player.h_move()
+            x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+            if x_collide:
+                self.player.handle_x_collide(x_collide.rect)
 
         keys = pygame.key.get_pressed()
+        if keys[pygame.K_l]:
+            self.cam_x-=5
+        if keys[pygame.K_j]:
+            self.cam_x+=5
+        if keys[pygame.K_i]:
+            self.cam_y-=5
+        if keys[pygame.K_k]:
+            self.cam_y+=5
 
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.player.inc_x_vel()
@@ -54,12 +68,18 @@ class PlayState(BaseState):
 
     def draw(self, screen):
         screen.fill((0, 255, 0))
-        self.level.draw(screen)
-        pygame.draw.rect(screen, (255, 0, 0), self.player.collision_hitbox, 2)
+        for level in self.levels:
+            level.draw(screen, self.cam_x, self.cam_y)
+        pygame.draw.rect(
+            screen, 
+            (255, 0, 0), 
+            self.player.collision_hitbox.move(self.cam_x,self.cam_y), 
+            2
+        )
         for sprite in self.sprites:
             if type(sprite) == parser.AnimatedSprite:
                 sprite.advance()
-            screen.blit(self.spritesheet, self.player.rect, sprite.rect())
+            screen.blit(self.spritesheet, self.player.rect.move(self.cam_x,self.cam_y), sprite.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:

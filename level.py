@@ -11,19 +11,22 @@ class Tile():
         self.type = type
 
 class Level():
-    def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled'):
+    def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled', tile_offset = (0, 0)):
         #give levels names. make button and inputbox so that we can set the name, lvl w/h, and click open file button
         self.tile_data = tiles
         self.w = w
         self.h = h
         self.name = name
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
+        self.tile_offset = tile_offset
 
     def get_tiles(self):
         tiles = []
         for r in range(self.w):
             for c in range(self.h):
                 key = str(r) + "," + str(c)
+                r += self.tile_offset[0]
+                c += self.tile_offset[1]
                 if key in self.tile_data.keys():
                     if self.tile_data[key] == "Ground":
                         rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, TILE_SIZE, TILE_SIZE])
@@ -55,7 +58,7 @@ class Level():
                     pygame.draw.rect(screen, (0, 255, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, TILE_SIZE, TILE_SIZE))
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path, offset=(0,0)):
         level_data = None
         with open(path, 'r') as f:
             level_data = json.load(f)
@@ -64,7 +67,8 @@ class Level():
                 w= level_data["size"]["width"], 
                 h= level_data["size"]["height"], 
                 tiles= level_data["tiles"], 
-                name= level_data["name"]
+                name= level_data["name"],
+                tile_offset= offset
             )
         else:
             print('could not load file')
