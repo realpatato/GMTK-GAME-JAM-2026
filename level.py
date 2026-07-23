@@ -13,37 +13,19 @@ class Tile():
 class Level():
     def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled'):
         #give levels names. make button and inputbox so that we can set the name, lvl w/h, and click open file button
-        self.tiles = tiles
+        self.tile_data = tiles
         self.w = w
         self.h = h
         self.name = name
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
-        #self.sprites, self.rects = self.get_tiles_and_rects()
-        self.tile_objs = self.get_tiles()
-
-    '''
-    def get_tiles_and_rects(self):
-        sprites = []
-        rects = []
-        for r in range(self.w):
-            for c in range(self.h):
-                key = str(r) + "," + str(c)
-                if key in self.tiles.keys():
-                    if self.tiles[key] == "Ground":
-                        rects.append(pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, TILE_SIZE, TILE_SIZE]))
-                        sprites.append(Sprite([32, 0, 16, 16]))
-                else:
-                    rects.append(pygame.Rect(r * TILE_SIZE, c * TILE_SIZE, 0, 0))
-                    sprites.append(Sprite([0, 0, 16, 16]))
-                    '''
 
     def get_tiles(self):
         tiles = []
         for r in range(self.w):
             for c in range(self.h):
                 key = str(r) + "," + str(c)
-                if key in self.tiles.keys():
-                    if self.tiles[key] == "Ground":
+                if key in self.tile_data.keys():
+                    if self.tile_data[key] == "Ground":
                         rect = pygame.Rect([r * TILE_SIZE, c * TILE_SIZE, TILE_SIZE, TILE_SIZE])
                         sprite = Sprite([32, 0, 16, 16])
                         tiles.append(Tile(rect, sprite, "Ground"))
@@ -55,8 +37,8 @@ class Level():
         return tiles
 
     def draw(self, screen, off_x = 0, off_y = 0):
-        self.tile_objs = self.get_tiles()
-        for tile in self.tile_objs:
+        tiles = self.get_tiles()
+        for tile in tiles:
             screen.blit(self.spritesheet, (tile.rect[0] + off_x, tile.rect[1] + off_y), tile.sprite.rect())
 
     @classmethod
@@ -81,7 +63,7 @@ class Level():
             json.dump({
                 "name": self.name,
                 "size": { "width": self.w, "height": self.h },
-                "tiles": self.tiles
+                "tiles": self.tile_data
             }, f, indent=4) 
         print('saved to '+path)
 

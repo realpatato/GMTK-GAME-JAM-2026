@@ -18,14 +18,15 @@ class PlayState(BaseState):
     def update(self, dt):
         self.player.v_move()
 
-        y_collide = self.player.collision_hitbox.collideobjects(self.level.tile_objs, key=lambda o : o.rect)
+        tiles = self.level.get_tiles()
+        y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
 
         if y_collide:
             self.player.handle_y_collide(y_collide.rect)
 
         self.player.h_move()
 
-        x_collide = self.player.collision_hitbox.collideobjects(self.level.tile_objs, key=lambda o : o.rect)
+        x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
 
         if x_collide:
             self.player.handle_x_collide(x_collide.rect)

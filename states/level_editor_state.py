@@ -50,10 +50,10 @@ class LevelEditorState(BaseState):
                 key = f'{x},{y}'
                 mouse_buttons = pygame.mouse.get_pressed()
                 if mouse_buttons[0]:
-                    self.level.tiles[key] = self.tile_type
+                    self.level.tile_data[key] = self.tile_type
                 if mouse_buttons[2]:
-                    if key in self.level.tiles:
-                        del self.level.tiles[key]
+                    if key in self.level.tile_data:
+                        del self.level.tile_data[key]
 
     def draw(self, screen):
         screen.fill((0, 0, 0))
