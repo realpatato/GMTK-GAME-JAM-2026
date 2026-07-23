@@ -22,17 +22,18 @@ class PlayState(BaseState):
         self.cam_y = 0
 
     def update(self, dt):
-        
-
+        self.player.v_move()
         for level in self.levels:
             tiles = level.get_tiles()
 
-            self.player.v_move()
             y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
             if y_collide:
                 self.player.handle_y_collide(y_collide.rect)
 
-            self.player.h_move()
+        self.player.h_move()
+        for level in self.levels:
+            tiles = level.get_tiles()
+
             x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
             if x_collide:
                 self.player.handle_x_collide(x_collide.rect)
