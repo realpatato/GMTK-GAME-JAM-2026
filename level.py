@@ -2,7 +2,12 @@ import pygame
 import json
 from constants import *
 from pathlib import Path
+from parser import Sprite
 
+class Tile():
+    def __init__(self, rect, sprite):
+        self.rect = rect
+        self.sprite = sprite
 
 class Level():
     def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled'):
@@ -11,35 +16,25 @@ class Level():
         self.w = w
         self.h = h
         self.name = name
-        self.ground_rects = self.get_ground_rects()
+        self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
+        self.sprites, self.rects = self.get_tiles_and_rects()
 
-    def get_ground_rects(self):
+    def get_tiles_and_rects(self):
+        sprites = []
         rects = []
         for pos, tiletype in self.tiles.items():
             x, y = [int(x) for x in pos.split(",")]
 
             if tiletype == "Ground":
                 rects.append(pygame.Rect([x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE]))
+                sprites.append(Sprite([32, 0, 16, 16]))
 
-        return rects
+        return sprites, rects
 
     def draw(self, screen, off_x = 0, off_y = 0):
-        for pos, tiletype in self.tiles.items():
-            x, y = [int(x) for x in pos.split(",")]
-
-            #debug
-            if tiletype == "Ground":
-                pygame.draw.rect(
-                    screen, 
-                    (0,0,255), 
-                    (
-                        x * TILE_SIZE + int(off_x), 
-                        y * TILE_SIZE + int(off_y), 
-                        TILE_SIZE, 
-                        TILE_SIZE
-                    )
-                )
-            #screen.blit
+        for sprite in self.sprites:
+            index = self.sprites.index(sprite)
+            screen.blit(self.spritesheet, self.rects[index], sprite.rect())
 
     @classmethod
     def load(cls, path):
