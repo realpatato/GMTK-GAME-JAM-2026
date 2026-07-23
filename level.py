@@ -38,7 +38,7 @@ class Level():
     def draw(self, screen, off_x = 0, off_y = 0):
         for sprite in self.sprites:
             index = self.sprites.index(sprite)
-            screen.blit(self.spritesheet, self.rects[index], sprite.rect())
+            screen.blit(self.spritesheet, (self.rects[index][0] + off_x, self.rects[index][1] + off_y), sprite.rect())
 
     @classmethod
     def load(cls, path):
