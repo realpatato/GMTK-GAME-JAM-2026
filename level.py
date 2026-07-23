@@ -36,6 +36,7 @@ class Level():
         return sprites, rects
 
     def draw(self, screen, off_x = 0, off_y = 0):
+        self.sprites, self.rects = self.get_tiles_and_rects()
         for sprite in self.sprites:
             index = self.sprites.index(sprite)
             screen.blit(self.spritesheet, (self.rects[index][0] + off_x, self.rects[index][1] + off_y), sprite.rect())

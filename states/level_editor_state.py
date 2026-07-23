@@ -58,17 +58,6 @@ class LevelEditorState(BaseState):
     def draw(self, screen):
         screen.fill((0, 0, 0))
 
-        pygame.draw.rect(
-            screen, 
-            (40, 40, 40), 
-            (
-                self.cam_x, 
-                self.cam_y, 
-                self.level.w * TILE_SIZE, 
-                self.level.h * TILE_SIZE
-            )
-        )
-
         #draw levle
         self.level.draw(screen, math.floor(self.cam_x), math.floor(self.cam_y))
 
