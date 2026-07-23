@@ -32,9 +32,9 @@ class PlayState(BaseState):
 
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.player.inc_x_vel()
-        elif keys[pygame.K_a]:
+        elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.player.inc_x_vel()
         else:
             if round(self.player.x_vel, 1) != 0:
@@ -66,28 +66,28 @@ class PlayState(BaseState):
                 self.next_state = "level_editor_state"
                 self.done = True
 
-            if event.key == pygame.K_d:
+            if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                 self.player.x_accel = 0.1
                 self.player.sprite.state = "r_walk"
 
-            if event.key == pygame.K_a:
+            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                 self.player.x_accel = -0.1
                 self.player.sprite.state = "l_walk"
 
-            if event.key == pygame.K_w or event.key == pygame.K_SPACE:
+            if event.key == pygame.K_w or event.key == pygame.K_UP:
                 if self.player.grounded:
                     self.player.y_accel = -5
                 self.player.grounded = False
 
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_d:
+            if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                 if self.player.x_vel > 0:
                     self.player.x_accel = -0.05
 
-            if event.key == pygame.K_a:
+            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                 if self.player.x_vel < 0:
                     self.player.x_accel = 0.05
 
-            if event.key == pygame.K_w or event.key == pygame.K_SPACE:
+            if event.key == pygame.K_w or event.key == pygame.K_UP:
                 if self.player.y_vel < 0:
                     self.player.y_vel = 0
