@@ -58,9 +58,9 @@ class Enemy():
         self.hitbox.y = self.rect.y + self.hitbox_offsets[1]
 
     def h_move(self):
-            self.rect.x += self.x_vel
-            #update hitboxes
-            self.hitbox.x = self.rect.x + self.hitbox_offsets[0]
+        self.rect.x += self.x_vel
+        #update hitboxes
+        self.hitbox.x = self.rect.x + self.hitbox_offsets[0]
 
     def handle_y_collide(self, rect):
         if self.y_vel > 0:

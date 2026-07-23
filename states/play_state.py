@@ -113,7 +113,7 @@ class PlayState(BaseState):
         screen.blit(self.spritesheet, self.player.rect.move(self.cam_x,self.cam_y), self.player.sprite.rect())
         for enemy in self.enemies:
             enemy.advance()
-            pygame.draw.rect(screen, (255, 0, 0), enemy.hitbox, 2)
+            pygame.draw.rect(screen, (255, 0, 0), enemy.hitbox.move(self.cam_x,self.cam_y), 2)
             screen.blit(self.spritesheet, enemy.rect.move(self.cam_x,self.cam_y), enemy.sprite.rect())
 
     def handle_event(self, event):
