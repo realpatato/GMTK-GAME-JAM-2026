@@ -3,7 +3,7 @@ import json
 from constants import *
 from pathlib import Path
 from parser import Sprite
-from tile import Tile
+from tile import Tile, Torch
 
 class Level():
     def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled', tile_offset = (0, 0)):
@@ -14,6 +14,7 @@ class Level():
         self.name = name
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
         self.tile_offset = tile_offset
+        self.tiles = self.get_tiles()
 
     def get_tiles(self):
         tiles = []
@@ -38,7 +39,7 @@ class Level():
                     if self.tile_data[key] == "Torch":
                         rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                         sprite = Sprite([16, 0, 16, 16])
-                        tiles.append(Tile(rect, sprite, "Torch"))
+                        tiles.append(Torch(rect, sprite, "Torch"))
                 else:
                     rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                     sprite = Sprite([0, 0, 16, 16])
@@ -47,9 +48,13 @@ class Level():
         return tiles
 
     def draw(self, screen, off_x = 0, off_y = 0, edit = False):
-        tiles = self.get_tiles()
+        tiles = self.tiles
         for tile in tiles:
             screen.blit(self.spritesheet, (tile.rect[0] + off_x, tile.rect[1] + off_y), tile.sprite.rect())
+            if type(tile) == Torch:
+                for enemy in tile.enemies:
+                    enemy.advance()
+                    screen.blit(self.spritesheet, enemy.rect.move(off_x, off_y), enemy.sprite.rect())
             if edit:
                 if tile.type == "Exit":
                     pygame.draw.rect(screen, (255, 0, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, TILE_SIZE, TILE_SIZE))

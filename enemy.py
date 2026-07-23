@@ -3,9 +3,11 @@ from pygame import Rect
 import random
 
 class Enemy():
-    def __init__(self):
+    def __init__(self, spawn_x, spawn_y):
         self.sprite = self.gen_sprite()
-        self.rect = Rect([128, 32, 16, 16])
+        self.rect = Rect([spawn_x, spawn_y, 16, 16])
+
+        self.jump_vel = -1 * (random.randint(20, 50) / 10)
 
         self.hitbox = Rect([0, 0, 8, 8])
         self.hitbox_offsets = (4, 8)
@@ -38,7 +40,7 @@ class Enemy():
 
     def handle_switch(self):
         if self.attack_phase == 1 or self.attack_phase == 3:
-            self.y_accel = -4
+            self.y_accel = self.jump_vel
             if self.attack_phase == 1:
                 self.x_accel = -0.1
             else:
@@ -87,6 +89,7 @@ class Enemy():
         self.x_vel *= -1
 
     def gen_sprite(self):
-        anims = {"r_pre_jump" : ((1, -1), 30), "r" : ((0, -1), 240), "l_pre_jump" : ((2, -1), 30), "l" : ((3, -1), 240)}
+        r_or_l_time = random.randint(150, 300)
+        anims = {"r_pre_jump" : ((1, -1), 30), "r" : ((0, -1), r_or_l_time), "l_pre_jump" : ((2, -1), 30), "l" : ((3, -1), r_or_l_time)}
         base_rect = [0, 48, 16, 16]
         return parser.AnimatedSprite(base_rect, 4, anims, "r")

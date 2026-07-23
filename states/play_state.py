@@ -4,7 +4,6 @@ import pygame
 import level
 import parser
 import player
-import enemy
 import level
 import tile
 
@@ -19,8 +18,6 @@ class PlayState(BaseState):
             level.Level.load("assets/rooms/big drop.json", (20, 0))
         ]
         self.player = player.Player()
-        self.enemy = enemy.Enemy()
-        self.enemies = [self.enemy]
 
         self.cam_x = 0
         self.cam_y = 0
@@ -29,39 +26,45 @@ class PlayState(BaseState):
 
     def update(self, dt):
         self.player.v_move()
-        for enemy in self.enemies:
-            enemy.v_move()
         for level in self.levels:
-            tiles = level.get_tiles()
+            tiles = level.tiles
 
             torches = [torch for torch in tiles if isinstance(torch, tile.Torch)]
 
             for torch in torches:
                 torch.tick(dt)
+                for enemy in torch.enemies:
+                    enemy.v_move()
 
             y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
             if y_collide:
                 self.player.handle_y_collide(y_collide.rect)
 
-            for enemy in self.enemies:
-                y_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
-                if y_collide:
-                    self.enemy.handle_y_collide(y_collide.rect)
+            for torch in torches:
+                for enemy in torch.enemies:
+                    y_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+                    if y_collide:
+                        enemy.handle_y_collide(y_collide.rect)
 
         self.player.h_move()
-        for enemy in self.enemies:
-            enemy.h_move()
         for level in self.levels:
-            tiles = level.get_tiles()
+            tiles = level.tiles
+
+            torches = [torch for torch in tiles if isinstance(torch, tile.Torch)]
+
+            for torch in torches:
+                for enemy in torch.enemies:
+                    enemy.h_move()
 
             x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
             if x_collide:
                 self.player.handle_x_collide(x_collide.rect)
 
-            for enemy in self.enemies:
-                x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
-                if x_collide:
-                    self.enemy.handle_x_collide(x_collide.rect)
+            for torch in torches:
+                for enemy in torch.enemies:
+                    x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+                    if x_collide:
+                        enemy.handle_x_collide(x_collide.rect)
         #camera
         cam_destination = (
             -self.player.rect.x + self.cam_x_off + (NATIVE_RESOLUTION[0] / SCALE_FACTOR),
@@ -97,10 +100,14 @@ class PlayState(BaseState):
         self.player.inc_y_vel()
         self.player.y_accel = 0.1    
 
-        for enemy in self.enemies:
-            enemy.inc_y_vel()
-            enemy.inc_x_vel()
-            enemy.y_accel = 0.1
+        for level in self.levels:
+            torches = [torch for torch in level.tiles if isinstance(torch, tile.Torch)]
+            
+            for torch in torches:
+                for enemy in torch.enemies:
+                    enemy.inc_y_vel()
+                    enemy.inc_x_vel()
+                    enemy.y_accel = 0.1
             
     def enter(self, persistent_data):
         super().enter(persistent_data)
@@ -117,10 +124,6 @@ class PlayState(BaseState):
         )
         self.player.sprite.advance()
         screen.blit(self.spritesheet, self.player.rect.move(self.cam_x,self.cam_y), self.player.sprite.rect())
-        for enemy in self.enemies:
-            enemy.advance()
-            pygame.draw.rect(screen, (255, 0, 0), enemy.hitbox.move(self.cam_x,self.cam_y), 2)
-            screen.blit(self.spritesheet, enemy.rect.move(self.cam_x,self.cam_y), enemy.sprite.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
