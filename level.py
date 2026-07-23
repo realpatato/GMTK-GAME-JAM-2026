@@ -50,9 +50,9 @@ class Level():
             screen.blit(self.spritesheet, (tile.rect[0] + off_x, tile.rect[1] + off_y), tile.sprite.rect())
             if edit:
                 if tile.type == "Exit":
-                    pygame.draw.rect(screen, (255, 0, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, tile.rect[2], tile.rect[3]))
+                    pygame.draw.rect(screen, (255, 0, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, TILE_SIZE, TILE_SIZE))
                 elif tile.type == "Enter":
-                    pygame.draw.rect(screen, (0, 255, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, tile.rect[2], tile.rect[3]))
+                    pygame.draw.rect(screen, (0, 255, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, TILE_SIZE, TILE_SIZE))
 
     @classmethod
     def load(cls, path):
