@@ -49,7 +49,7 @@ class Floor:
                     next((k for k, v in old_room.tile_data.items() if v == "Enter"), None)
                     .split(",")
                 ]
-                total_y_off += enter_pos[1] - old_exit_pos[1]
+                #total_y_off += enter_pos[1] - old_exit_pos[1]
 
             #add our positions
 
