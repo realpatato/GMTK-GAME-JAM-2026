@@ -25,6 +25,8 @@ class PlayState(BaseState):
 
     def update(self, dt):
         self.player.v_move()
+        for enemy in self.enemies:
+            enemy.v_move()
         for level in self.levels:
             tiles = level.get_tiles()
 
@@ -32,13 +34,25 @@ class PlayState(BaseState):
             if y_collide:
                 self.player.handle_y_collide(y_collide.rect)
 
+            for enemy in self.enemies:
+                y_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+                if y_collide:
+                    self.enemy.handle_y_collide(y_collide.rect)
+
         self.player.h_move()
+        for enemy in self.enemies:
+            enemy.h_move()
         for level in self.levels:
             tiles = level.get_tiles()
 
             x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
             if x_collide:
                 self.player.handle_x_collide(x_collide.rect)
+
+            for enemy in self.enemies:
+                x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+                if x_collide:
+                    self.enemy.handle_x_collide(x_collide.rect)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_l]:
@@ -65,6 +79,11 @@ class PlayState(BaseState):
                     self.player.sprite.state = "l_idle"
         self.player.inc_y_vel()
         self.player.y_accel = 0.1    
+
+        for enemy in self.enemies:
+            enemy.inc_y_vel()
+            enemy.inc_x_vel()
+            enemy.y_accel = 0.1
             
     def enter(self, persistent_data):
         super().enter(persistent_data)
