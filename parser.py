@@ -18,6 +18,7 @@ class Animation():
         if self.ct == self.frame_time:
             self.current_frame_index += 1
             self.ct = 0
+        return self.ct
 
     def rect(self):
         return self.frames[self.current_frame_index % len(self.frames)]
@@ -36,11 +37,12 @@ class AnimatedSprite(Sprite):
             for key in anims:
                 frames = []
                 for i in self.anims[key][0]:
-                    frames.append(self.rects[i])
+                    if i != -1:
+                        frames.append(self.rects[i])
                 self.anims[key] = Animation(frames, self.anims[key][1])
 
     def advance(self):
-        self.anims[self.state].advance()
+        return self.anims[self.state].advance()
 
     def rect(self):
         return self.anims[self.state].rect()

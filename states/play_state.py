@@ -3,6 +3,7 @@ import pygame
 import level
 import parser
 import player
+import enemy
 import level
 
 pygame.display.init()
@@ -16,7 +17,8 @@ class PlayState(BaseState):
             level.Level.load("assets/rooms/big drop.json", (20, 0))
         ]
         self.player = player.Player()
-        self.sprites = [self.player.sprite]
+        self.enemy = enemy.Enemy()
+        self.enemies = [self.enemy]
 
         self.cam_x = 0
         self.cam_y = 0
@@ -77,10 +79,12 @@ class PlayState(BaseState):
             self.player.collision_hitbox.move(self.cam_x,self.cam_y), 
             2
         )
-        for sprite in self.sprites:
-            if type(sprite) == parser.AnimatedSprite:
-                sprite.advance()
-            screen.blit(self.spritesheet, self.player.rect.move(self.cam_x,self.cam_y), sprite.rect())
+        self.player.sprite.advance()
+        screen.blit(self.spritesheet, self.player.rect, self.player.sprite.rect())
+        for enemy in self.enemies:
+            enemy.advance()
+            pygame.draw.rect(screen, (255, 0, 0), enemy.hitbox, 2)
+            screen.blit(self.spritesheet, enemy.rect, enemy.sprite.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:

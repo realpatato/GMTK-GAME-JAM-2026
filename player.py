@@ -6,10 +6,10 @@ class Player():
         self.sprite = self.gen_sprite()
         self.rect = Rect([32, 0, 32, 32])
 
-        self.damage_hitbox = Rect([0, 0, 8, 16]) #in reference to player
+        self.damage_hitbox = Rect([0, 0, 8, 16])
         self.damage_hitbox_offsets = (12, 12)
 
-        self.collision_hitbox = Rect([0, 0, 14, 16]) #in reference to player
+        self.collision_hitbox = Rect([0, 0, 14, 16])
         self.collision_hitbox_offsets = (9, 16)
 
         self.max_x_vel = 2.5
