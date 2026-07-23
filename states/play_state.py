@@ -80,11 +80,11 @@ class PlayState(BaseState):
             2
         )
         self.player.sprite.advance()
-        screen.blit(self.spritesheet, self.player.rect, self.player.sprite.rect())
+        screen.blit(self.spritesheet, self.player.rect.move(self.cam_x,self.cam_y), self.player.sprite.rect())
         for enemy in self.enemies:
             enemy.advance()
             pygame.draw.rect(screen, (255, 0, 0), enemy.hitbox, 2)
-            screen.blit(self.spritesheet, enemy.rect, enemy.sprite.rect())
+            screen.blit(self.spritesheet, enemy.rect.move(self.cam_x,self.cam_y), enemy.sprite.rect())
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
