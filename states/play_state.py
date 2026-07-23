@@ -25,16 +25,17 @@ class PlayState(BaseState):
     def update(self, dt):
         self.timer.decrease(dt)
 
+        torches = self.floor.get_torches()
+
         self.player.v_move()
+
+        for torch in torches:
+            torch.tick(dt)
+            for enemy in torch.enemies:
+                enemy.v_move()
+
         for room in self.floor.rooms:
             tiles = room.tiles
-
-            torches = [torch for torch in tiles if isinstance(torch, tile.Torch)]
-
-            for torch in torches:
-                torch.tick(dt)
-                for enemy in torch.enemies:
-                    enemy.v_move()
 
             y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
             if y_collide:
@@ -42,19 +43,19 @@ class PlayState(BaseState):
 
             for torch in torches:
                 for enemy in torch.enemies:
+                    #print(enemy)
                     y_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
                     if y_collide:
                         enemy.handle_y_collide(y_collide.rect)
 
         self.player.h_move()
+
+        for torch in torches:
+            for enemy in torch.enemies:
+                enemy.h_move()
+
         for room in self.floor.rooms:
             tiles = room.tiles
-
-            torches = [torch for torch in tiles if isinstance(torch, tile.Torch)]
-
-            for torch in torches:
-                for enemy in torch.enemies:
-                    enemy.h_move()
 
             x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
             if x_collide:
@@ -101,7 +102,7 @@ class PlayState(BaseState):
         self.player.y_accel = 0.1    
 
         for room in self.floor.rooms:
-            torches = [torch for torch in room.tiles if isinstance(torch, tile.Torch)]
+            torches = room.torches
             
             for torch in torches:
                 for enemy in torch.enemies:
@@ -117,7 +118,7 @@ class PlayState(BaseState):
                     
         self.floor.draw(screen, self.cam_x, self.cam_y)
         for room in self.floor.rooms:
-            torches = [torch for torch in room.tiles if isinstance(torch, tile.Torch)]
+            torches = room.torches
             for torch in torches:
                 for enemy in torch.enemies:
                     enemy.advance()

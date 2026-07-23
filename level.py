@@ -15,6 +15,7 @@ class Level():
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
         self.tile_offset = tile_offset
         self.tiles = self.get_tiles()
+        self.torches = self.get_torches()
 
     def get_tiles(self):
         tiles = []
@@ -47,6 +48,9 @@ class Level():
                     tiles.append(Tile(rect, sprite, "None"))
 
         return tiles
+
+    def get_torches(self):
+        return [torch for torch in self.tiles if isinstance(torch, Torch)]
 
     def draw(self, screen, off_x = 0, off_y = 0, edit = False):
         tiles = self.tiles

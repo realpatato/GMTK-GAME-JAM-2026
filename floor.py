@@ -49,3 +49,10 @@ class Floor:
     def draw(self, screen, off_x = 0, off_y = 0):
         for room in self.rooms:
             room.draw(screen, off_x, off_y)
+
+    def get_torches(self):
+        torches = []
+        for room in self.rooms:
+            for torch in room.torches:
+                torches.append(torch)
+        return torches
