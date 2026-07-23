@@ -1,4 +1,5 @@
 from .base_state import BaseState
+from constants import *
 import pygame
 import level
 import parser
@@ -22,6 +23,8 @@ class PlayState(BaseState):
 
         self.cam_x = 0
         self.cam_y = 0
+        self.cam_x_off = 0
+        self.cam_y_off = 0
 
     def update(self, dt):
         self.player.v_move()
@@ -40,15 +43,24 @@ class PlayState(BaseState):
             if x_collide:
                 self.player.handle_x_collide(x_collide.rect)
 
+        #camera
+        cam_destination = (
+            -self.player.rect.x + self.cam_x_off + (NATIVE_RESOLUTION[0] / SCALE_FACTOR),
+            -self.player.rect.y + self.cam_y_off + (NATIVE_RESOLUTION[1] / SCALE_FACTOR),
+        )
+        cam_speed = 0.085
+        self.cam_x += (cam_destination[0] - self.cam_x) * cam_speed
+        self.cam_y += (cam_destination[1] - self.cam_y) * cam_speed
+
         keys = pygame.key.get_pressed()
         if keys[pygame.K_l]:
-            self.cam_x-=5
+            self.cam_x_off-=5
         if keys[pygame.K_j]:
-            self.cam_x+=5
+            self.cam_x_off+=5
         if keys[pygame.K_i]:
-            self.cam_y-=5
+            self.cam_y_off+=5
         if keys[pygame.K_k]:
-            self.cam_y+=5
+            self.cam_y_off-=5
 
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             self.player.inc_x_vel()
