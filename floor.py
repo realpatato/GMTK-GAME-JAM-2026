@@ -23,6 +23,7 @@ class Floor:
 
                 room.shift(x_off, y_off)
 
+            room.torches = room.get_torches()
             self.rooms.append(room)
         
 
