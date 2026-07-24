@@ -7,12 +7,13 @@ class Game:
         self.native_screen = pygame.Surface(NATIVE_RESOLUTION)
         self.keep_playing = True
         self.clock = pygame.time.Clock()
+        self.state = None
 
 
     def begin(self, states, start_state):
-        self.state_name = start_state
         self.states = states
-        self.state = self.states[self.state_name]
+        self.state_name = start_state
+        self.set_state(start_state)
         
     def loop(self):
         dt = 0
@@ -41,10 +42,13 @@ class Game:
             self.set_state()
         self.state.update(dt) 
                 
-    def set_state(self):        
-        persistent_data = self.state.leave()
-        self.state_name = self.state.next_state
+    def set_state(self, state_name = None):
+        persistent_data = None
+        if self.state:
+            persistent_data = self.state.leave()
+        self.state_name = state_name or self.state.next_state
         self.state = self.states[self.state_name]
+
         self.state.enter(persistent_data)
 
     def draw(self):

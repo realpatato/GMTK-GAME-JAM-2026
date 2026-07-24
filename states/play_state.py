@@ -12,10 +12,13 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
-        self.floor = floor.Floor(5)
+            
+    def enter(self, persistent_data):
+        super().enter(persistent_data)
+        self.floor = floor.Floor(10)
         self.player = player.Player()
-
         self.timer = timer.Timer()
+
 
         self.cam_x = 0
         self.cam_y = 0
@@ -24,6 +27,10 @@ class PlayState(BaseState):
 
     def update(self, dt):
         self.timer.decrease(dt)
+        if self.timer.has_ended:
+            print("lose")
+            self.next_state = "play_state"
+            self.done = True
 
         torches = self.floor.get_torches()
 
@@ -110,9 +117,6 @@ class PlayState(BaseState):
                     enemy.inc_y_vel()
                     enemy.inc_x_vel()
                     enemy.y_accel = 0.1
-            
-    def enter(self, persistent_data):
-        super().enter(persistent_data)
 
     def draw(self, screen):
         screen.fill((75, 61, 68))

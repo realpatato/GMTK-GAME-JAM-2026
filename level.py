@@ -6,7 +6,7 @@ from parser import Sprite
 from tile import Tile, Torch
 
 class Level():
-    def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled', tile_offset = (0, 0)):
+    def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled', tile_offset = [0,0]):
         #give levels names. make button and inputbox so that we can set the name, lvl w/h, and click open file button
         self.tile_data = tiles
         self.w = w
@@ -16,6 +16,19 @@ class Level():
         self.tile_offset = tile_offset
         self.tiles = self.get_tiles()
         self.torches = self.get_torches()
+
+        #to make things easy store start and exit when level is created
+        self.update_enter_exit_pos()
+
+    def update_enter_exit_pos(self):
+        for key, value in self.tile_data.items():
+            x, y = map(int, key.split(","))
+
+            if value == "Enter":
+                self.enter_pos = (x, y)
+            elif value == "Exit":
+                self.exit_pos = (x, y)
+
 
     def get_tiles(self):
         tiles = []
@@ -63,11 +76,11 @@ class Level():
                     pygame.draw.rect(screen, (0, 255, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, TILE_SIZE, TILE_SIZE))
 
     def shift(self, x,y):
-        self.tile_offset = (x, y)
+        self.tile_offset =[x,y]
         self.tiles = self.get_tiles()
 
     @classmethod
-    def load(cls, path, offset=(0,0)):
+    def load(cls, path, offset=[0,0]):
         level_data = None
         with open(path, 'r') as f:
             level_data = json.load(f)
