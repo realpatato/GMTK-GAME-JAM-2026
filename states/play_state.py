@@ -73,6 +73,11 @@ class PlayState(BaseState):
                     x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
                     if x_collide:
                         enemy.handle_x_collide(x_collide.rect)
+
+                    x_damage = enemy.hitbox.colliderect(self.player.damage_hitbox)
+                    if x_damage:
+                        torch.enemies.remove(enemy)
+                        self.timer.decrease(5)
         #camera
         cam_destination = (
             -self.player.rect.x + self.cam_x_off + (NATIVE_RESOLUTION[0] / SCALE_FACTOR),
@@ -133,12 +138,6 @@ class PlayState(BaseState):
         timer_rect = timer_display.get_rect(center=(NATIVE_RESOLUTION[0] // 2, 32))
         screen.blit(timer_display, timer_rect)
 
-        pygame.draw.rect(
-            screen, 
-            (255, 0, 0), 
-            self.player.collision_hitbox.move(self.cam_x,self.cam_y), 
-            2
-        )
         self.player.sprite.advance()
         screen.blit(self.spritesheet, self.player.rect.move(self.cam_x,self.cam_y), self.player.sprite.rect())
 
