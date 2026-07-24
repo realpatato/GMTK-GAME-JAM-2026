@@ -37,3 +37,10 @@ class Floor:
             for torch in room.torches:
                 torches.append(torch)
         return torches
+
+    def get_tiles(self):
+        tiles = []
+        for room in self.rooms:
+            for tile in room.tiles:
+                tiles.append(tile)
+        return tiles

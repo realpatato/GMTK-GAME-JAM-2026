@@ -33,6 +33,7 @@ class PlayState(BaseState):
             self.done = True
 
         torches = self.floor.get_torches()
+        tiles = self.floor.get_tiles()
 
         self.player.v_move()
 
@@ -41,44 +42,38 @@ class PlayState(BaseState):
             for enemy in torch.enemies:
                 enemy.v_move()
 
-        for room in self.floor.rooms:
-            tiles = room.tiles
+        y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+        if y_collide:
+            self.player.handle_y_collide(y_collide.rect)
 
-            y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
-            if y_collide:
-                self.player.handle_y_collide(y_collide.rect)
-
-            for torch in torches:
-                for enemy in torch.enemies:
-                    #print(enemy)
-                    y_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
-                    if y_collide:
-                        enemy.handle_y_collide(y_collide.rect)
+        for torch in torches:
+            for enemy in torch.enemies:
+                #print(enemy)
+                y_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+                if y_collide:
+                    enemy.handle_y_collide(y_collide.rect)
 
         self.player.h_move()
 
         for torch in torches:
             for enemy in torch.enemies:
                 enemy.h_move()
+                
+        x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+        if x_collide:
+            self.player.handle_x_collide(x_collide.rect)
 
-        for room in self.floor.rooms:
-            tiles = room.tiles
+        for torch in torches:
+            for enemy in torch.enemies:
+                x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+                if x_collide:
+                    enemy.handle_x_collide(x_collide.rect)
 
-            x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
-            if x_collide:
-                self.player.handle_x_collide(x_collide.rect)
-
-            for torch in torches:
-                for enemy in torch.enemies:
-                    x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
-                    if x_collide:
-                        enemy.handle_x_collide(x_collide.rect)
-
-                    x_damage = enemy.hitbox.colliderect(self.player.damage_hitbox)
-                    if x_damage:
-                        torch.enemies.remove(enemy)
-                        self.timer.decrease(5)
-        #camera
+                x_damage = enemy.hitbox.colliderect(self.player.damage_hitbox)
+                if x_damage:
+                    torch.enemies.remove(enemy)
+                    self.timer.decrease(5)
+    #camera
         cam_destination = (
             -self.player.rect.x + self.cam_x_off + (NATIVE_RESOLUTION[0] / SCALE_FACTOR),
             -self.player.rect.y + self.cam_y_off + (NATIVE_RESOLUTION[1] / SCALE_FACTOR),
