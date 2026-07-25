@@ -19,13 +19,13 @@ class PlayState(BaseState):
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
         pygame.mixer.init()
         self.sounds = {
-            "jump": pygame.mixer.Sound("assets/sounds/jump.wav"),
-            "die": pygame.mixer.Sound("assets/sounds/explosion.wav"),
-            "parry": pygame.mixer.Sound("assets/sounds/parry.wav"),
-            "gaintime": pygame.mixer.Sound("assets/sounds/hitEnemy.wav"),
-            "nextfloor": pygame.mixer.Sound("assets/sounds/powerUp.wav"),
-            "losetime": pygame.mixer.Sound("assets/sounds/hitHurt.wav"),
-            "bounce": pygame.mixer.Sound("assets/sounds/footstep.wav"),
+            "jump": pygame.mixer.Sound("assets/sounds/jump.ogg"),
+            "die": pygame.mixer.Sound("assets/sounds/explosion.ogg"),
+            "parry": pygame.mixer.Sound("assets/sounds/parry.ogg"),
+            "gaintime": pygame.mixer.Sound("assets/sounds/hitEnemy.ogg"),
+            "nextfloor": pygame.mixer.Sound("assets/sounds/powerUp.ogg"),
+            "losetime": pygame.mixer.Sound("assets/sounds/hitHurt.ogg"),
+            "bounce": pygame.mixer.Sound("assets/sounds/footstep.ogg"),
         }
             
     def enter(self, persistent_data):
@@ -43,7 +43,7 @@ class PlayState(BaseState):
         self.room_count_mult_per_floor = 1.3 #keep increasing by this factor
         self.current_room_count = self.base_room_count
 
-        pygame.mixer.music.load("assets/music/floor.mp3")
+        pygame.mixer.music.load("assets/music/floor.ogg")
         pygame.mixer.music.play(-1, 0.0)
         self.volume = 1
 
