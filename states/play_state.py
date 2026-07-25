@@ -90,10 +90,15 @@ class PlayState(BaseState):
             for enemy in spawner.enemies:
                 enemy.update(dt, tiles)
 
-        self.player.update(dt, tiles, 
+        res = self.player.update(dt, tiles, 
             [enemy for spawner in spawners for enemy in spawner.enemies],
             self.timer
         )
+        print(res)
+
+        if res == "END":
+            self.next_state = "mainmenu_state"
+            self.done = True
 
         #"""
         #camera
@@ -108,10 +113,10 @@ class PlayState(BaseState):
         self.timer.decrease(dt)
         if self.current_room is None:
             self.timer.time = 0
+            '''
         if self.timer.has_ended:
-            print("lose")
             self.next_state = "mainmenu_state"
-            self.done = True
+            self.done = True'''
         
     def draw(self, screen):
         screen.fill((75, 61, 68))
@@ -127,7 +132,7 @@ class PlayState(BaseState):
         timer_rect = timer_display.get_rect(center=(NATIVE_RESOLUTION[0] // 2, 32))
         screen.blit(timer_display, timer_rect)
 
-        self.player.draw(screen, self.spritesheet, self.cam_x, self.cam_y)
+        self.player.draw(screen, self.spritesheet, self.cam_x, self.cam_y, self.timer)
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:

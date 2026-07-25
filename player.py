@@ -48,6 +48,9 @@ class Player():
         self.y_accel = 0
         self.y_vel = 0
 
+        self.death_sprite = self.gen_death_sprite()
+        self.death_over = False
+
     def move(self, x, y):
         self.rect.topleft = (x, y)
         self.collision_hitbox.topleft = (
@@ -96,109 +99,115 @@ class Player():
 
 
     def update(self, dt, tiles, enemies, timer):
-        self.v_move()
-        y_collide = self.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
-        if y_collide:
-            self.handle_y_collide(y_collide.rect)
+        if not timer.has_ended:
+            self.v_move()
+            y_collide = self.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+            if y_collide:
+                self.handle_y_collide(y_collide.rect)
 
-        self.h_move()
-        x_collide = self.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
-        if x_collide:
-            self.handle_x_collide(x_collide.rect)
+            self.h_move()
+            x_collide = self.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+            if x_collide:
+                self.handle_x_collide(x_collide.rect)
 
-        ground_check = self.collision_hitbox.copy()
-        ground_check.y += 1
-        self.grounded = any(ground_check.colliderect(tile) for tile in tiles)
+            ground_check = self.collision_hitbox.copy()
+            ground_check.y += 1
+            self.grounded = any(ground_check.colliderect(tile) for tile in tiles)
 
-        if self.grounded:
-            self.coyote_time = self.coyote_time_max
-        else:
-            self.coyote_time-=dt
+            if self.grounded:
+                self.coyote_time = self.coyote_time_max
+            else:
+                self.coyote_time-=dt
 
-        self.can_jump = self.grounded
-        if self.coyote_time > 0:
-            self.can_jump = True
+            self.can_jump = self.grounded
+            if self.coyote_time > 0:
+                self.can_jump = True
 
-        if self.is_parrying:
-            self.parry_elapsed+=dt
-            self.parry_cooldown_elapsed = 0
-            if self.parry_elapsed >= self.parry_duration:
+            if self.is_parrying:
+                self.parry_elapsed+=dt
+                self.parry_cooldown_elapsed = 0
+                if self.parry_elapsed >= self.parry_duration:
+                    self.is_parrying = False
+
+                #actually parry
+                parried_enemies = self.parry_hitbox.collidelistall(
+                    [enemy.hitbox for enemy in enemies]
+                )
+                if len(parried_enemies)>0:
+                    enemy = enemies[parried_enemies[0]]
+                    enemy.should_die = True
+                    self.y_vel = -self.jump_height
+                    timer.time += enemy.reward_time
+            else:
+                self.parry_cooldown_elapsed+=dt
+                if self.parry_cooldown_elapsed >= self.parry_cooldown_duration:
+                    self.can_parry = True
+
+            if self.grounded:
+                self.parry_cooldown_elapsed = self.parry_cooldown_duration
                 self.is_parrying = False
+                self.can_parry = False
+                
+            keys = key.get_pressed()
+            if keys[K_d] or keys[K_RIGHT]:
+                self.inc_x_vel()
+                self.sprite.state = "r_walk"
+            elif keys[K_a] or keys[K_LEFT]:
+                self.inc_x_vel()
+                self.sprite.state = "l_walk"
+            else:
+                #no matter if this is positive or negative, just bring it down by this factor
+                self.x_vel *= self.friction
 
-            #actually parry
-            parried_enemies = self.parry_hitbox.collidelistall(
-                [enemy.hitbox for enemy in enemies]
-            )
-            if len(parried_enemies)>0:
-                enemy = enemies[parried_enemies[0]]
-                enemy.should_die = True
-                self.y_vel = -self.jump_height
-                timer.time += enemy.reward_time
-        else:
-            self.parry_cooldown_elapsed+=dt
-            if self.parry_cooldown_elapsed >= self.parry_cooldown_duration:
-                self.can_parry = True
+                if abs(self.x_vel) < 0.3:
+                    if self.x_accel < 0:
+                        self.sprite.state = "r_idle"
+                    else:
+                        self.sprite.state = "l_idle"
 
-        if self.grounded:
-            self.parry_cooldown_elapsed = self.parry_cooldown_duration
-            self.is_parrying = False
-            self.can_parry = False
+            if self.is_parrying:
+                self.sprite.state = "parry"
+
+            self.y_accel = self.fall_accel
+            if (keys[K_w] or keys[K_UP]) and self.y_vel < 0:
+                self.y_accel = self.jump_accel
+            self.inc_y_vel()
             
-        keys = key.get_pressed()
-        if keys[K_d] or keys[K_RIGHT]:
-            self.inc_x_vel()
-            self.sprite.state = "r_walk"
-        elif keys[K_a] or keys[K_LEFT]:
-            self.inc_x_vel()
-            self.sprite.state = "l_walk"
+
+            if self.invincible:
+                self.iframes_elapsed+=1
+                if self.iframes_elapsed>self.iframes:
+                    self.invincible =False
+                    self.iframes_elapsed = 0
+            else:
+                #getting hurt
+                attacking_enemies = self.damage_hitbox.collidelistall(
+                    [enemy.hitbox for enemy in enemies]
+                )
+                
+                if len(attacking_enemies)>0:
+                    enemy = enemies[attacking_enemies[0]]
+                    self.y_vel = -1 * (random.randint(15, 35) / 10)
+                    self.x_vel = (random.randint(0, 1)* 2 -1) * 3
+                    self.invincible = True
+
+                    timer.time -= enemy.penalty_time
+
+            self.sprite.advance()
         else:
-            #no matter if this is positive or negative, just bring it down by this factor
-            self.x_vel *= self.friction
+            return self.death_sprite.advance(True)
 
-            if abs(self.x_vel) < 0.3:
-                if self.x_accel < 0:
-                    self.sprite.state = "r_idle"
-                else:
-                    self.sprite.state = "l_idle"
-
-        if self.is_parrying:
-            self.sprite.state = "parry"
-
-        self.y_accel = self.fall_accel
-        if (keys[K_w] or keys[K_UP]) and self.y_vel < 0:
-            self.y_accel = self.jump_accel
-        self.inc_y_vel()
-        
-
-        if self.invincible:
-            self.iframes_elapsed+=1
-            if self.iframes_elapsed>self.iframes:
-                self.invincible =False
-                self.iframes_elapsed = 0
+    def draw(self, screen, spritesheet, off_x, off_y, timer):
+        if not timer.has_ended:
+            if self.invincible:
+                if (self.iframes_elapsed // 4) % 2 == 1:
+                    screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
+                return
+            screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
         else:
-            #getting hurt
-            attacking_enemies = self.damage_hitbox.collidelistall(
-                [enemy.hitbox for enemy in enemies]
-            )
-            
-            if len(attacking_enemies)>0:
-                enemy = enemies[attacking_enemies[0]]
-                self.y_vel = -1 * (random.randint(15, 35) / 10)
-                self.x_vel = (random.randint(0, 1)* 2 -1) * 3
-                self.invincible = True
-    
-                timer.time -= enemy.penalty_time
-
-        self.sprite.advance()
-
-    def draw(self, screen, spritesheet, off_x, off_y):
-        if self.invincible:
-            if (self.iframes_elapsed // 4) % 2 == 1:
-                screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
-            return
-        screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
-        #draw.rect(screen, (0, 255,0), self.collision_hitbox.move(off_x,off_y))
-        #draw.rect(screen, (255, 0,0), self.damage_hitbox.move(off_x,off_y))
+            screen.blit(spritesheet, self.rect.move(off_x, off_y), self.death_sprite.rect())
+            #draw.rect(screen, (0, 255,0), self.collision_hitbox.move(off_x,off_y))
+            #draw.rect(screen, (255, 0,0), self.damage_hitbox.move(off_x,off_y))
 
 
     def inc_x_vel(self):
@@ -264,3 +273,10 @@ class Player():
         }
         base_rect = [0, 16, 32, 32]
         return parser.AnimatedSprite(base_rect, 9, anims, "r_idle")
+
+    def gen_death_sprite(self):
+        anims = {
+            "explode" : ((0, 1, 2, 3), 20)
+        }
+        base_rect = [0, 64, 32, 32]
+        return parser.AnimatedSprite(base_rect, 4, anims, "explode")

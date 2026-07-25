@@ -185,5 +185,5 @@ class WaterBlob(Enemy):
             "l_pre_jump" : ((2, -1), 30), 
             "l" : ((3, -1), r_or_l_time)
         }
-        base_rect = [64, 48, 32, 32]
+        base_rect = [128, 64, 32, 32]
         return parser.AnimatedSprite(base_rect, 4, anims, "r")
