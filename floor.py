@@ -32,16 +32,19 @@ class Floor:
             self.rooms.append(room)
         else:
             print("no start files!!")
+            
 
         if not end_files:
             print("no end files..")
 
-        for i in range(room_count + 1):
+        i = 0
+        while i < room_count + 1:
             files = end_files if i == room_count and end_files else middle_files
             random_room_file = random.choice(files)
             room = level.Level.load(random_room_file)
 
             old_room = self.rooms[-1]
+
             room.shift(
                 old_room.tile_offset[0] + old_room.exit_pos[0] + 1 - room.enter_pos[0],
                 old_room.tile_offset[1] + old_room.exit_pos[1] - room.enter_pos[1]
@@ -49,6 +52,7 @@ class Floor:
 
             room.spawners = room.get_spawners()
             self.rooms.append(room)
+            i+=1
 
     def find_room(self, player):
         for room in self.rooms:

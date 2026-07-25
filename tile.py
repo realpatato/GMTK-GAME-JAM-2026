@@ -41,6 +41,7 @@ class Faucet(Spawner):
         super().__init__(rect, sprite, type)
         self.max_enemies = 2
         self.spawn_rate = 3
+        self.time = self.spawn_rate
 
     def spawn(self):
         self.enemies_has_spawned += 1

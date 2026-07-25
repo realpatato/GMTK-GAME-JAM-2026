@@ -18,6 +18,8 @@ class Level():
         self.spawners = self.get_spawners()
 
         #to make things easy store start and exit when level is created
+        self.enter_pos = None
+        self.exit_pos = None
         self.update_enter_exit_pos()
 
         #store a rect that contains the bounds of the room to see what room player is in
@@ -113,6 +115,16 @@ class Level():
             print('could not load file')
 
     def save(self):
+        self.update_enter_exit_pos()
+        if "end-" in self.name:
+            if self.enter_pos is None:
+                print("Could not save-- set ENTER pos!!")
+                return
+        else:
+            if self.exit_pos is None or self.enter_pos is None:
+                print("Could not save-- set enter and exit positions!!")
+                return
+        
         path = _get_path(self.name)
 
         with open(path, 'w') as f:

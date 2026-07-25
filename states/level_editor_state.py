@@ -3,11 +3,12 @@ from level import Level
 import pygame
 from gui import *
 from constants import *
-import tkinter as tk
-from tkinter import filedialog
+if IS_DESKTOP:
+    import tkinter as tk
+    from tkinter import filedialog
 
-root = tk.Tk()
-root.withdraw()
+    root = tk.Tk()
+    root.withdraw()
 
 class LevelEditorState(BaseState):
     def __init__(self):
@@ -139,17 +140,18 @@ class LevelEditorState(BaseState):
                 self.level = Level()
 
             #load
-            if event.key == pygame.K_BACKSLASH:
-                file_path = filedialog.askopenfilename()
-                if isinstance(file_path, str):
-                    self.level = Level.load(file_path)
-                    if self.level.name != "untitled":
-                        self.gui["level title"].text = self.level.name
-                    if self.level.w != "20":
-                        self.gui["level width"].text = str(self.level.w)
-                    if self.level.h != "12":
-                        self.gui["level height"].text = str(self.level.h)
-                else: print("something went wrong ok?")
+            if IS_DESKTOP:
+                if event.key == pygame.K_BACKSLASH:
+                    file_path = filedialog.askopenfilename()
+                    if isinstance(file_path, str):
+                        self.level = Level.load(file_path)
+                        if self.level.name != "untitled":
+                            self.gui["level title"].text = self.level.name
+                        if self.level.w != "20":
+                            self.gui["level width"].text = str(self.level.w)
+                        if self.level.h != "12":
+                            self.gui["level height"].text = str(self.level.h)
+                    else: print("something went wrong ok?")
 
             if event.key == pygame.K_RETURN:
                 self.level.save()

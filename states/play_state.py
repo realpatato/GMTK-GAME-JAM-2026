@@ -17,12 +17,20 @@ class PlayState(BaseState):
     def __init__(self):
         super().__init__()
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
+        pygame.mixer.init()
+        self.sounds = {
+            "jump": pygame.mixer.Sound("assets/sounds/jump.wav"),
+            "die": pygame.mixer.Sound("assets/sounds/explosion.wav"),
+            "parry": pygame.mixer.Sound("assets/sounds/parry.wav"),
+            "gaintime": pygame.mixer.Sound("assets/sounds/hitEnemy.wav"),
+            "losetime": pygame.mixer.Sound("assets/sounds/hitHurt.wav"),
+        }
             
     def enter(self, persistent_data):
         super().enter(persistent_data)
 
         self.timer = timer.Timer()
-        self.player = player.Player()
+        self.player = player.Player(sounds = self.sounds)
 
         self.cam_x = 0
         self.cam_y = 0
@@ -94,7 +102,6 @@ class PlayState(BaseState):
             [enemy for spawner in spawners for enemy in spawner.enemies],
             self.timer
         )
-        print(res)
 
         if res == "END":
             self.next_state = "mainmenu_state"

@@ -1,4 +1,7 @@
 import math
+import sys
+
+IS_DESKTOP = sys.platform != "emscripten"
 
 TILE_SIZE = 16 #pixels
 
