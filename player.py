@@ -1,5 +1,6 @@
 import parser
-from pygame import Rect
+from pygame import Rect, key
+from pygame.locals import *
 
 class Player():
     def __init__(self, x = 32, y = 0):
@@ -21,6 +22,69 @@ class Player():
         self.y_vel = 0
         
         self.grounded = False
+
+    def handle_event(self, event):
+        if event.type == KEYDOWN:
+            if event.key == K_d or event.key == K_RIGHT:
+                self.x_accel = 0.1
+                self.sprite.state = "r_walk"
+
+            if event.key == K_a or event.key == K_LEFT:
+                self.x_accel = -0.1
+                self.sprite.state = "l_walk"
+
+            if event.key == K_w or event.key == K_UP:
+                if self.grounded:
+                    self.y_accel = -5
+                self.grounded = False
+
+        if event.type == KEYUP:
+            if event.key == K_d or event.key == K_RIGHT:
+                if self.x_vel > 0:
+                    self.x_accel = -0.05
+
+            if event.key == K_a or event.key == K_LEFT:
+                if self.x_vel < 0:
+                    self.x_accel = 0.05
+
+            if event.key == K_w or event.key == K_UP:
+                if self.y_vel < 0:
+                    self.y_vel = 0
+
+
+    def update(self, dt, tiles):
+        self.v_move()
+        y_collide = self.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+        if y_collide:
+            self.handle_y_collide(y_collide.rect)
+
+        self.h_move()
+        x_collide = self.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+        if x_collide:
+            self.handle_x_collide(x_collide.rect)
+
+        keys = key.get_pressed()
+        if keys[K_d] or keys[K_RIGHT]:
+            self.inc_x_vel()
+        elif keys[K_a] or keys[K_LEFT]:
+            self.inc_x_vel()
+        else:
+            if round(self.x_vel, 1) != 0:
+                self.inc_x_vel()
+            else:
+                self.x_vel = 0
+                if self.x_accel < 0:
+                    self.sprite.state = "r_idle"
+                else:
+                    self.sprite.state = "l_idle"
+
+        self.inc_y_vel()
+        self.y_accel = 0.1
+
+        self.sprite.advance()
+
+    def draw(self, screen, spritesheet, off_x, off_y):
+        screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
 
     def inc_x_vel(self):
         self.x_vel += self.x_accel
@@ -53,7 +117,13 @@ class Player():
             self.collision_hitbox.right = rect.left
         if self.x_vel < 0:
             self.collision_hitbox.left = rect.right
-        self.x_vel = 0
+
+
+        #hi this makes you bounce off walls! to undo this make it 0
+        self.x_vel *= -1
+
+
+
         #update hitboxes
         self.rect.x = self.collision_hitbox.x - self.collision_hitbox_offsets[0]
         self.damage_hitbox.x = self.rect.x + self.damage_hitbox_offsets[0]

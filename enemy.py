@@ -24,6 +24,27 @@ class Enemy():
         self.x_accel = 0
         self.x_vel = 0
 
+    def update(self, dt, tiles):
+        self.v_move()
+        y_collide = self.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+        if y_collide:
+            self.handle_y_collide(y_collide.rect)
+
+        self.h_move()
+        x_collide = self.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+        if x_collide:
+            self.handle_x_collide(x_collide.rect)
+
+        self.inc_y_vel()
+        self.inc_x_vel()
+        self.y_accel = 0.1
+
+        self.advance()
+
+
+    def draw(self, screen, spritesheet, off_x, off_y):
+        screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
+
     def advance(self):
         self.attack_frame = self.sprite.advance()
         if self.attack_frame == 0:
