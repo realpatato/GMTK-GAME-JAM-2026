@@ -36,7 +36,7 @@ class LevelEditorState(BaseState):
 
     def update(self, dt):
 
-        self.level.tiles = self.level.get_tiles()
+        self.level.tiles = self.level.create_tile_objs()
 
         if self.focused_gui:
             self.focused_gui.update(dt)

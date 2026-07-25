@@ -9,23 +9,52 @@ class Floor:
         dir_path = Path('assets/rooms')
         dir_path.mkdir(parents=True, exist_ok=True)
 
-        files = [entry for entry in dir_path.iterdir() if entry.is_file()]
+        start_files = [
+            f for f in dir_path.iterdir()
+            if f.is_file() and "start-" in f.name.lower()
+        ]
+        end_files = [
+            f for f in dir_path.iterdir()
+            if f.is_file() and "end-" in f.name.lower()
+        ]
+        middle_files = [
+            f for f in dir_path.iterdir() 
+            if f.is_file() 
+            and not "start-" in f.name.lower() 
+            and not "end-" in f.name.lower()
+        ]
 
-        for i in range(room_count):
+
+        if start_files:
+            random_start_file = random.choice(start_files)
+            room = level.Level.load(random_start_file)
+            room.spawners = room.get_spawners()
+            self.rooms.append(room)
+            print(random_start_file)
+        else:
+            print("no start files!!")
+
+        if not end_files:
+            print("no end files..")
+
+        for i in range(room_count + 1):
+            files = end_files if i == room_count and end_files else middle_files
             random_room_file = random.choice(files)
             room = level.Level.load(random_room_file)
 
-            if i > 0:
-                old_room = self.rooms[-1]
-
-                x_off = old_room.tile_offset[0] + old_room.exit_pos[0] + 1 - room.enter_pos[0]
-                y_off = old_room.tile_offset[1] + old_room.exit_pos[1] - room.enter_pos[1]
-
-                room.shift(x_off, y_off)
+            old_room = self.rooms[-1]
+            room.shift(
+                old_room.tile_offset[0] + old_room.exit_pos[0] + 1 - room.enter_pos[0],
+                old_room.tile_offset[1] + old_room.exit_pos[1] - room.enter_pos[1]
+            )
 
             room.spawners = room.get_spawners()
             self.rooms.append(room)
-        
+
+    def find_room(self, player):
+        for room in self.rooms:
+            if room.bounds.collidepoint(player.collision_hitbox.center):
+                return room
 
     def draw(self, screen, off_x = 0, off_y = 0):
         for room in self.rooms:

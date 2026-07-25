@@ -20,12 +20,12 @@ class PlayState(BaseState):
             
     def enter(self, persistent_data):
         super().enter(persistent_data)
-        self.floor = floor.Floor(10)
+        self.floor = floor.Floor(5)
 
         enter_pos = self.floor.rooms[0].enter_pos
 
         self.player = player.Player(
-            (enter_pos[0] + 2) * TILE_SIZE,
+            (enter_pos[0] - 0.5) * TILE_SIZE,
             (enter_pos[1] - 1) * TILE_SIZE
         )
         self.timer = timer.Timer()
@@ -36,24 +36,31 @@ class PlayState(BaseState):
         self.cam_x_off = 0
         self.cam_y_off = 0
 
+        self.current_room = None
+
     def update(self, dt):
-        self.timer.decrease(dt)
-        if self.timer.has_ended:
-            print("lose")
-            self.next_state = "play_state"
-            self.done = True
+        if (
+            self.current_room is None 
+            or not self.current_room.bounds.collidepoint(
+                self.player.collision_hitbox.center 
+            )
+        ):
+            self.current_room = self.floor.find_room(self.player)
 
-        tiles = self.floor.get_tiles()
-        spawners = self.floor.get_spawners()
+        tiles = []
+        spawners = []
+        if self.current_room:
+            tiles = self.current_room.create_tile_objs()
+            spawners = self.current_room.get_spawners()
 
-        self.player.update(dt, tiles)
-
-        #"""
         for spawner in spawners:
             spawner.tick(dt)
             for enemy in spawner.enemies:
                 enemy.update(dt, tiles)
 
+        self.player.update(dt, tiles)
+
+        #"""
         #camera
         cam_destination = (
             -self.player.rect.x + self.cam_x_off + (NATIVE_RESOLUTION[0] / 2) - 50,
@@ -62,6 +69,15 @@ class PlayState(BaseState):
         cam_speed = 0.085
         self.cam_x += (cam_destination[0] - self.cam_x) * cam_speed
         self.cam_y += (cam_destination[1] - self.cam_y) * cam_speed
+        
+        self.timer.decrease(dt)
+        if self.current_room is None:
+            print("kill player.")
+            self.timer.time = 0
+        if self.timer.has_ended:
+            print("lose")
+            self.next_state = "play_state"
+            self.done = True
         
     def draw(self, screen):
         screen.fill((75, 61, 68))

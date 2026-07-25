@@ -119,13 +119,6 @@
         "6,11": "Ground",
         "5,11": "Ground",
         "4,11": "Ground",
-        "4,12": "Ground",
-        "5,12": "Ground",
-        "6,12": "Ground",
-        "7,12": "Ground",
-        "8,12": "Ground",
-        "9,12": "Ground",
-        "10,12": "Ground",
         "7,16": "Ground",
         "6,16": "Ground",
         "5,16": "Ground",
@@ -166,6 +159,15 @@
         "2,27": "Ground",
         "1,27": "Ground",
         "11,26": "Exit",
-        "0,4": "Enter"
+        "0,4": "Enter",
+        "6,24": "Faucet",
+        "6,14": "Torch",
+        "4,10": "Ground",
+        "5,10": "Ground",
+        "6,10": "Ground",
+        "7,10": "Ground",
+        "8,10": "Ground",
+        "9,10": "Ground",
+        "10,10": "Ground"
     }
 }

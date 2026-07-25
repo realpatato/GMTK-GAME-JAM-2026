@@ -14,11 +14,22 @@ class Level():
         self.name = name
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
         self.tile_offset = tile_offset
-        self.tiles = self.get_tiles()
+        self.tiles = self.create_tile_objs()
         self.spawners = self.get_spawners()
 
         #to make things easy store start and exit when level is created
         self.update_enter_exit_pos()
+
+        #store a rect that contains the bounds of the room to see what room player is in
+        self.update_bounds()
+
+    def update_bounds(self):
+        self.bounds = pygame.Rect(
+            self.tile_offset[0] * TILE_SIZE,
+            self.tile_offset[1] * TILE_SIZE,
+            self.w * TILE_SIZE,
+            self.h * TILE_SIZE
+        )
 
     def update_enter_exit_pos(self):
         for key, value in self.tile_data.items():
@@ -30,7 +41,7 @@ class Level():
                 self.exit_pos = (x, y)
 
 
-    def get_tiles(self):
+    def create_tile_objs(self):
         tiles = []
         for r in range(self.w):
             for c in range(self.h):
@@ -82,7 +93,8 @@ class Level():
 
     def shift(self, x,y):
         self.tile_offset =[x,y]
-        self.tiles = self.get_tiles()
+        self.update_bounds()
+        self.tiles = self.create_tile_objs()
 
     @classmethod
     def load(cls, path, offset=[0,0]):

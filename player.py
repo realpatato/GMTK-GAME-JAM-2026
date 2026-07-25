@@ -33,6 +33,8 @@ class Player():
         self.y_accel = 0
         self.y_vel = 0
 
+        self.dead = False
+
     def handle_event(self, event):
         if event.type == KEYDOWN:
             if event.key == K_d or event.key == K_RIGHT:
