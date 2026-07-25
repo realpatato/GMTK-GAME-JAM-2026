@@ -30,7 +30,6 @@ class Floor:
             room = level.Level.load(random_start_file)
             room.spawners = room.get_spawners()
             self.rooms.append(room)
-            print(random_start_file)
         else:
             print("no start files!!")
 

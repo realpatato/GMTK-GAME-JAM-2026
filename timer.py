@@ -2,7 +2,8 @@ from pygame import font
 
 class Timer:
     def __init__(self):
-        self.time = 30.00
+        self.total_time = 30.00
+        self.time = self.total_time
         self.font = font.Font("assets/Bomby.ttf", 48)
 
         self.has_ended = False
@@ -18,7 +19,5 @@ class Timer:
                 self.has_ended = True
 
     def get_color(self):
-        if self.time < 5:
-            return (255, 51 * self.time, 51 * self.time)
-        else:
-            return (255, 255, 255)
+        ratio = min(1.0, max(0.0, self.time / (self.total_time - 10)))
+        return (255, 200 * ratio + 50, 200 * ratio + 50)

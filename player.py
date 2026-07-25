@@ -1,5 +1,5 @@
 import parser
-from pygame import Rect, key
+from pygame import Rect, key, draw
 from pygame.locals import *
 
 class Player():
@@ -16,7 +16,7 @@ class Player():
         self.friction = 0.93
 
         self.coyote_time_max = 0.18 # seconds until you can no longer jump with coyote time
-        self.coyote_time = self.coyote_time_max
+        self.coyote_time = 0
 
         self.grounded = False
         self.can_jump = False
@@ -34,6 +34,17 @@ class Player():
         self.y_vel = 0
 
         self.dead = False
+
+    def move(self, x, y):
+        self.rect.topleft = (x, y)
+        self.collision_hitbox.topleft = (
+            x + self.collision_hitbox_offsets[0], 
+            y + self.collision_hitbox_offsets[1]
+        )
+        self.damage_hitbox.topleft = (
+            x + self.damage_hitbox_offsets[0], 
+            y + self.damage_hitbox_offsets[1]
+        )
 
     def handle_event(self, event):
         if event.type == KEYDOWN:
@@ -113,6 +124,8 @@ class Player():
 
     def draw(self, screen, spritesheet, off_x, off_y):
         screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
+        #draw.rect(screen, (0, 255,0), self.collision_hitbox.move(off_x,off_y))
+        #draw.rect(screen, (255, 0,0), self.damage_hitbox.move(off_x,off_y))
 
     def inc_x_vel(self):
         self.x_vel += self.x_accel

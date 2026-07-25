@@ -1,5 +1,5 @@
 import parser
-from pygame import Rect
+from pygame import Rect, draw
 import random
 
 class Enemy:
@@ -45,6 +45,7 @@ class Enemy:
 
     def draw(self, screen, spritesheet, off_x, off_y):
         screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
+        #draw.rect(screen, (0, 255,0), self.hitbox.move(off_x,off_y))
 
     def inc_y_vel(self):
         self.y_vel += self.y_accel

@@ -20,23 +20,36 @@ class PlayState(BaseState):
             
     def enter(self, persistent_data):
         super().enter(persistent_data)
-        self.floor = floor.Floor(5)
 
-        enter_pos = self.floor.rooms[0].enter_pos
-
-        self.player = player.Player(
-            (enter_pos[0] - 0.5) * TILE_SIZE,
-            (enter_pos[1] - 1) * TILE_SIZE
-        )
         self.timer = timer.Timer()
-
+        self.player = player.Player()
 
         self.cam_x = 0
         self.cam_y = 0
         self.cam_x_off = 0
         self.cam_y_off = 0
 
+        self.base_room_count = 3
+        self.room_count_mult_per_floor = 1.3 #keep increasing by this factor
+        self.current_room_count = self.base_room_count
+
+        self.next_floor()
+
+    def next_floor(self):
+        
+        print(f'current floor has {self.current_room_count} rooms!!')
+        self.floor = floor.Floor(int(self.current_room_count))
+
+        enter_pos = self.floor.rooms[0].enter_pos
+        self.player.move(
+            (enter_pos[0] - 0.5) * TILE_SIZE,
+            (enter_pos[1] - 1) * TILE_SIZE
+        )
+
         self.current_room = None
+
+        #used to see if we reached the last room
+        self.prev_room = None
 
     def update(self, dt):
         if (
@@ -45,7 +58,31 @@ class PlayState(BaseState):
                 self.player.collision_hitbox.center 
             )
         ):
+            self.prev_room = self.current_room
+            if self.prev_room:
+                print(self.floor.rooms.index(self.prev_room))
+            else:
+                print("None")
             self.current_room = self.floor.find_room(self.player)
+            if self.current_room is None and self.prev_room == self.floor.rooms[-1]:
+
+                self.current_room_count = (
+                    self.current_room_count * self.room_count_mult_per_floor
+                )
+                
+                self.timer.time += 5
+
+                print('before next floor')
+                old_x = self.player.rect.x
+                old_y = self.player.rect.y
+
+                self.next_floor()
+                dx = self.player.rect.x - old_x
+                dy = self.player.rect.y - old_y
+
+                self.cam_x -= dx
+                self.cam_y -= dy
+                return
 
         tiles = []
         spawners = []
@@ -76,7 +113,7 @@ class PlayState(BaseState):
             self.timer.time = 0
         if self.timer.has_ended:
             print("lose")
-            self.next_state = "play_state"
+            self.next_state = "mainmenu_state"
             self.done = True
         
     def draw(self, screen):
