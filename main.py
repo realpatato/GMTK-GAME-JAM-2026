@@ -3,6 +3,7 @@ import pygame
 import asyncio 
 
 pygame.init()
+pygame.mixer.pre_init(44100, -16, 2, 1024)
 
 from states.play_state import PlayState
 from states.level_editor_state import LevelEditorState

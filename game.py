@@ -18,10 +18,6 @@ class Game:
         
     async def loop(self):
         dt = 0
-        
-        if not IS_DESKTOP:
-            while not pygame.assets.ready():
-                await asyncio.sleep(0.1)
 
         while self.keep_playing:
             
