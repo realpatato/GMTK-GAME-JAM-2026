@@ -40,7 +40,7 @@ class Player():
         self.parry_cooldown_duration = 0.8
         self.parry_cooldown_elapsed = 0
 
-        self.max_x_vel = 2.5
+        self.max_x_vel = 3.7
         self.x_accel = 0
         self.x_vel = 0
 
@@ -276,7 +276,7 @@ class Player():
 
     def gen_death_sprite(self):
         anims = {
-            "explode" : ((0, 1, 2, 3), 20)
+            "explode" : ((0, 1, 2, 3,0, 1, 2, 3,0, 1, 2, 3), 3)
         }
         base_rect = [0, 64, 32, 32]
         return parser.AnimatedSprite(base_rect, 4, anims, "explode")

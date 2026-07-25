@@ -1,5 +1,6 @@
 import pygame
 from constants import *
+import asyncio 
 
 class Game:
     def __init__(self):
@@ -15,7 +16,7 @@ class Game:
         self.state_name = start_state
         self.set_state(start_state)
         
-    def loop(self):
+    async def loop(self):
         dt = 0
 
         while self.keep_playing:
@@ -25,6 +26,8 @@ class Game:
             self.draw()
 
             dt = self.clock.tick(60) / 1000
+
+            await asyncio.sleep(0) 
 
         pygame.quit()
         quit()
