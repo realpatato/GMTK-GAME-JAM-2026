@@ -2,11 +2,16 @@ from .base_state import BaseState
 from constants import *
 import pygame
 import player
-import tile
 import floor
 import timer
 
 pygame.display.init()
+
+#notes to self:
+#ONLY update room player is in. this will save SO much time
+#ALSO only DRAW room player is in, + one after, + one before.
+#ALSO make flameys spawn in their respective rooms.
+#rooms are responsible for enemies they contain.
 
 class PlayState(BaseState):
     def __init__(self):
@@ -16,7 +21,13 @@ class PlayState(BaseState):
     def enter(self, persistent_data):
         super().enter(persistent_data)
         self.floor = floor.Floor(10)
-        self.player = player.Player()
+
+        enter_pos = self.floor.rooms[0].enter_pos
+
+        self.player = player.Player(
+            (enter_pos[0] + 2) * TILE_SIZE,
+            (enter_pos[1] - 1) * TILE_SIZE
+        )
         self.timer = timer.Timer()
 
 
@@ -32,51 +43,66 @@ class PlayState(BaseState):
             self.next_state = "play_state"
             self.done = True
 
-        torches = self.floor.get_torches()
         tiles = self.floor.get_tiles()
+        # torches = self.floor.get_torches()
 
         self.player.v_move()
 
+        """
         for torch in torches:
             torch.tick(dt)
             for enemy in torch.enemies:
                 enemy.v_move()
+        """
 
         y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
         if y_collide:
             self.player.handle_y_collide(y_collide.rect)
 
-        for torch in torches:
-            for enemy in torch.enemies:
-                #print(enemy)
-                y_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
-                if y_collide:
-                    enemy.handle_y_collide(y_collide.rect)
+            y_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+            if y_collide:
+                self.player.handle_y_collide(y_collide.rect)
+
+        """
+            for torch in torches:
+                for enemy in torch.enemies:
+                    #print(enemy)
+                    y_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+                    if y_collide:
+                        enemy.handle_y_collide(y_collide.rect)
+        """
 
         self.player.h_move()
 
+        """
         for torch in torches:
             for enemy in torch.enemies:
                 enemy.h_move()
-                
-        x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
-        if x_collide:
-            self.player.handle_x_collide(x_collide.rect)
+        """
 
+        """
         for torch in torches:
             for enemy in torch.enemies:
                 x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
                 if x_collide:
                     enemy.handle_x_collide(x_collide.rect)
+        """
 
-                x_damage = enemy.hitbox.colliderect(self.player.damage_hitbox)
-                if x_damage:
-                    torch.enemies.remove(enemy)
-                    self.timer.decrease(5)
-    #camera
+        x_collide = self.player.collision_hitbox.collideobjects(tiles, key=lambda o : o.rect)
+        if x_collide:
+            self.player.handle_x_collide(x_collide.rect)
+
+        """
+            for torch in torches:
+                for enemy in torch.enemies:
+                    x_collide = enemy.hitbox.collideobjects(tiles, key=lambda o : o.rect)
+                    if x_collide:
+                        enemy.handle_x_collide(x_collide.rect)
+        """
+        #camera
         cam_destination = (
-            -self.player.rect.x + self.cam_x_off + (NATIVE_RESOLUTION[0] / SCALE_FACTOR),
-            -self.player.rect.y + self.cam_y_off + (NATIVE_RESOLUTION[1] / SCALE_FACTOR),
+            -self.player.rect.x + self.cam_x_off + (NATIVE_RESOLUTION[0] / 2) - 50,
+            -self.player.rect.y + self.cam_y_off + (NATIVE_RESOLUTION[1] / 2) - 20,
         )
         cam_speed = 0.085
         self.cam_x += (cam_destination[0] - self.cam_x) * cam_speed
@@ -109,6 +135,7 @@ class PlayState(BaseState):
         self.player.inc_y_vel()
         self.player.y_accel = 0.1
 
+        """
         for room in self.floor.rooms:
             torches = room.torches
             
@@ -117,17 +144,20 @@ class PlayState(BaseState):
                     enemy.inc_y_vel()
                     enemy.inc_x_vel()
                     enemy.y_accel = 0.1
+        """
 
     def draw(self, screen):
         screen.fill((75, 61, 68))
                     
         self.floor.draw(screen, self.cam_x, self.cam_y)
+        """
         for room in self.floor.rooms:
             torches = room.torches
             for torch in torches:
                 for enemy in torch.enemies:
                     enemy.advance()
                     screen.blit(self.spritesheet, enemy.rect.move(self.cam_x, self.cam_y), enemy.sprite.rect())
+        """
 
         timer_display = self.timer.get_display()
         timer_rect = timer_display.get_rect(center=(NATIVE_RESOLUTION[0] // 2, 32))

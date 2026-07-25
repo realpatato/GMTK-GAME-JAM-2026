@@ -2,9 +2,9 @@ import parser
 from pygame import Rect
 
 class Player():
-    def __init__(self):
+    def __init__(self, x = 32, y = 0):
         self.sprite = self.gen_sprite()
-        self.rect = Rect([32, 0, 32, 32])
+        self.rect = Rect([x, y, 32, 32])
 
         self.damage_hitbox = Rect([0, 0, 8, 16])
         self.damage_hitbox_offsets = (12, 12)
