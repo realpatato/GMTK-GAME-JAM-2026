@@ -26,14 +26,15 @@ class Enemy():
 
     def update(self, dt, tiles):
         self.v_move()
-        y_collide = self.hitbox.collideobjects(tiles, key=lambda o : o.rect)
-        if y_collide:
-            self.handle_y_collide(y_collide.rect)
-
+        for tile in tiles:
+            if self.hitbox.colliderect(tile.rect):
+                self.handle_y_collide(tile.rect)
+                
         self.h_move()
-        x_collide = self.hitbox.collideobjects(tiles, key=lambda o : o.rect)
-        if x_collide:
-            self.handle_x_collide(x_collide.rect)
+        for tile in tiles:
+            if self.hitbox.colliderect(tile.rect):
+                self.handle_x_collide(tile.rect)
+
 
         self.inc_y_vel()
         self.inc_x_vel()
@@ -108,6 +109,8 @@ class Enemy():
         if self.x_vel < 0:
             self.hitbox.left = rect.right
         self.x_vel *= -1
+
+        print(self.x_vel)
 
     def gen_sprite(self):
         r_or_l_time = random.randint(150, 300)

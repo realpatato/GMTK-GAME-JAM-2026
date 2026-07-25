@@ -13,6 +13,14 @@ class Player():
         self.collision_hitbox = Rect([0, 0, 14, 16])
         self.collision_hitbox_offsets = (9, 16)
 
+        self.friction = 0.93
+
+        self.coyote_time_max = 0.18 # seconds until you can no longer jump with coyote time
+        self.coyote_time = self.coyote_time_max
+
+        self.grounded = False
+        self.can_jump = False
+
         self.max_x_vel = 2.5
         self.x_accel = 0
         self.x_vel = 0
@@ -20,8 +28,6 @@ class Player():
         self.max_y_vel = 5
         self.y_accel = 0
         self.y_vel = 0
-        
-        self.grounded = False
 
     def handle_event(self, event):
         if event.type == KEYDOWN:
@@ -34,9 +40,10 @@ class Player():
                 self.sprite.state = "l_walk"
 
             if event.key == K_w or event.key == K_UP:
-                if self.grounded:
-                    self.y_accel = -5
-                self.grounded = False
+                if self.can_jump:
+                    self.can_jump = False
+                    self.coyote_time = 0
+                    self.y_vel = -5
 
         if event.type == KEYUP:
             if event.key == K_d or event.key == K_RIGHT:
@@ -48,8 +55,8 @@ class Player():
                     self.x_accel = 0.05
 
             if event.key == K_w or event.key == K_UP:
-                if self.y_vel < 0:
-                    self.y_vel = 0
+                if self.y_vel < -0.5:
+                    self.y_vel = -0.5
 
 
     def update(self, dt, tiles):
@@ -63,16 +70,29 @@ class Player():
         if x_collide:
             self.handle_x_collide(x_collide.rect)
 
+        ground_check = self.collision_hitbox.copy()
+        ground_check.y += 1
+        self.grounded = any(ground_check.colliderect(tile) for tile in tiles)
+
+        if self.grounded:
+            self.coyote_time = self.coyote_time_max
+        else:
+            self.coyote_time-=dt
+
+        self.can_jump = self.grounded
+        if self.coyote_time > 0:
+            self.can_jump = True
+
         keys = key.get_pressed()
         if keys[K_d] or keys[K_RIGHT]:
             self.inc_x_vel()
         elif keys[K_a] or keys[K_LEFT]:
             self.inc_x_vel()
         else:
-            if round(self.x_vel, 1) != 0:
-                self.inc_x_vel()
-            else:
-                self.x_vel = 0
+            #no matter if this is positive or negative, just bring it down by this factor
+            self.x_vel *= self.friction
+
+            if abs(self.x_vel) < 0.3:
                 if self.x_accel < 0:
                     self.sprite.state = "r_idle"
                 else:
@@ -117,12 +137,8 @@ class Player():
             self.collision_hitbox.right = rect.left
         if self.x_vel < 0:
             self.collision_hitbox.left = rect.right
-
-
         #hi this makes you bounce off walls! to undo this make it 0
-        self.x_vel *= -1
-
-
+        self.x_vel *= -1.1
 
         #update hitboxes
         self.rect.x = self.collision_hitbox.x - self.collision_hitbox_offsets[0]
@@ -131,7 +147,6 @@ class Player():
     def handle_y_collide(self, rect):
         if self.y_vel > 0:
             self.collision_hitbox.bottom = rect.top
-            self.grounded = True
         if self.y_vel < 0:
             self.collision_hitbox.top = rect.bottom
         self.y_vel = 0

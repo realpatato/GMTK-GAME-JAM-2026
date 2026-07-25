@@ -55,9 +55,17 @@ class LevelEditorState(BaseState):
             ):
                 x, y = int(self.cursor_x), int(self.cursor_y)
                 key = f'{x},{y}'
+
+                selected_tile = TILE_TYPES[self.tile_type_i % len(TILE_TYPES)]
+
                 mouse_buttons = pygame.mouse.get_pressed()
                 if mouse_buttons[0]:
-                    self.level.tile_data[key] = TILE_TYPES[self.tile_type_i % len(TILE_TYPES)]
+                    if selected_tile in ["Exit", "Enter"]:
+                        if selected_tile in self.level.tile_data.values():
+                            if self.level.tile_data.get(key) != selected_tile:
+                                return 
+
+                    self.level.tile_data[key] = selected_tile
                 if mouse_buttons[2]:
                     if key in self.level.tile_data:
                         del self.level.tile_data[key]
@@ -121,9 +129,9 @@ class LevelEditorState(BaseState):
                 self.next_state = "play_state"
                 self.done = True
 
-            if event.key == pygame.K_UP:
+            if event.key in [pygame.K_RIGHT, pygame.K_UP]:
                 self.tile_type_i+=1
-            if event.key == pygame.K_DOWN:
+            if event.key in [pygame.K_LEFT, pygame.K_DOWN]:
                 self.tile_type_i-=1
 
                 #clear
