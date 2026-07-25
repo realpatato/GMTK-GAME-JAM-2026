@@ -21,6 +21,9 @@ class Enemy:
         self.life_time_elapsed = 0
         self.should_die = False
 
+        self.reward_time = 5
+        self.penalty_time = self.reward_time/2
+
     def update(self, dt, tiles):
         self.v_move()
         for tile in tiles:

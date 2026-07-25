@@ -59,10 +59,6 @@ class PlayState(BaseState):
             )
         ):
             self.prev_room = self.current_room
-            if self.prev_room:
-                print(self.floor.rooms.index(self.prev_room))
-            else:
-                print("None")
             self.current_room = self.floor.find_room(self.player)
             if self.current_room is None and self.prev_room == self.floor.rooms[-1]:
 
@@ -72,7 +68,6 @@ class PlayState(BaseState):
                 
                 self.timer.time += 5
 
-                print('before next floor')
                 old_x = self.player.rect.x
                 old_y = self.player.rect.y
 
@@ -95,7 +90,10 @@ class PlayState(BaseState):
             for enemy in spawner.enemies:
                 enemy.update(dt, tiles)
 
-        self.player.update(dt, tiles)
+        self.player.update(dt, tiles, 
+            [enemy for spawner in spawners for enemy in spawner.enemies],
+            self.timer
+        )
 
         #"""
         #camera
@@ -109,7 +107,6 @@ class PlayState(BaseState):
         
         self.timer.decrease(dt)
         if self.current_room is None:
-            print("kill player.")
             self.timer.time = 0
         if self.timer.has_ended:
             print("lose")
