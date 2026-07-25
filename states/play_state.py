@@ -23,7 +23,9 @@ class PlayState(BaseState):
             "die": pygame.mixer.Sound("assets/sounds/explosion.wav"),
             "parry": pygame.mixer.Sound("assets/sounds/parry.wav"),
             "gaintime": pygame.mixer.Sound("assets/sounds/hitEnemy.wav"),
+            "nextfloor": pygame.mixer.Sound("assets/sounds/powerUp.wav"),
             "losetime": pygame.mixer.Sound("assets/sounds/hitHurt.wav"),
+            "bounce": pygame.mixer.Sound("assets/sounds/footstep.wav"),
         }
             
     def enter(self, persistent_data):
@@ -40,6 +42,10 @@ class PlayState(BaseState):
         self.base_room_count = 3
         self.room_count_mult_per_floor = 1.3 #keep increasing by this factor
         self.current_room_count = self.base_room_count
+
+        pygame.mixer.music.load("assets/music/floor.mp3")
+        pygame.mixer.music.play(-1, 0.0)
+        self.volume = 1
 
         self.next_floor()
 
@@ -60,6 +66,8 @@ class PlayState(BaseState):
         self.prev_room = None
 
     def update(self, dt):
+        
+        pygame.mixer.music.set_volume(self.volume)
         if (
             self.current_room is None 
             or not self.current_room.bounds.collidepoint(
@@ -80,6 +88,7 @@ class PlayState(BaseState):
                 old_y = self.player.rect.y
 
                 self.next_floor()
+                self.sounds["nextfloor"].play()
                 dx = self.player.rect.x - old_x
                 dy = self.player.rect.y - old_y
 
@@ -106,6 +115,7 @@ class PlayState(BaseState):
         if res == "END":
             self.next_state = "mainmenu_state"
             self.done = True
+            pygame.mixer.music.fadeout(1)
 
         #"""
         #camera
@@ -143,8 +153,10 @@ class PlayState(BaseState):
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                self.next_state = "level_editor_state"
-                self.done = True
+            inc = 0.2
+            if event.key == pygame.K_EQUALS:
+                self.volume = min(1, self.volume + inc)
+            if event.key == pygame.K_MINUS:
+                self.volume = max(0, self.volume - inc)
 
         self.player.handle_event(event)

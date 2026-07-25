@@ -27,3 +27,6 @@ class MainMenuState(BaseState):
             if event.key == pygame.K_RETURN:
                 self.next_state = "play_state"
                 self.done = True
+            if event.key == pygame.K_ESCAPE:
+                self.next_state = "level_editor_state"
+                self.done = True

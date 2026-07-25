@@ -77,7 +77,7 @@ class Player():
 
     def handle_event(self, event):
         if event.type == KEYDOWN:
-            if event.key == K_w or event.key == K_UP:
+            if event.key in [K_w, K_UP, K_SPACE]:
                 if self.can_jump:
                     self.can_jump = False
                     self.coyote_time = 0
@@ -90,7 +90,7 @@ class Player():
                     self.play_sound("parry")
 
         if event.type == KEYUP:
-            if event.key == K_w or event.key == K_UP:
+            if event.key in [K_w, K_UP, K_SPACE]:
                 if self.y_vel < -0.5:
                     self.y_vel = -0.5
 
@@ -174,7 +174,7 @@ class Player():
             self.sprite.state = "parry"
 
         self.y_accel = self.fall_accel
-        if (keys[K_w] or keys[K_UP]) and self.y_vel < 0:
+        if (keys[K_w] or keys[K_UP] or keys[K_SPACE]) and self.y_vel < 0:
             self.y_accel = self.jump_accel
         self.inc_y_vel()
         
@@ -262,6 +262,7 @@ class Player():
             self.collision_hitbox.left = rect.right
         #hi this makes you bounce off walls! to undo this make it 0
         self.x_vel *= -0.4
+        self.play_sound("bounce")
 
         #update hitboxes
         self.rect.x = self.collision_hitbox.x - self.collision_hitbox_offsets[0]
