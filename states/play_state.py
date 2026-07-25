@@ -44,14 +44,14 @@ class PlayState(BaseState):
             self.done = True
 
         tiles = self.floor.get_tiles()
-        torches = self.floor.get_torches()
+        spawners = self.floor.get_spawners()
 
         self.player.update(dt, tiles)
 
         #"""
-        for torch in torches:
-            torch.tick(dt)
-            for enemy in torch.enemies:
+        for spawner in spawners:
+            spawner.tick(dt)
+            for enemy in spawner.enemies:
                 enemy.update(dt, tiles)
 
         #camera
@@ -69,9 +69,8 @@ class PlayState(BaseState):
         self.floor.draw(screen, self.cam_x, self.cam_y)
 
         for room in self.floor.rooms:
-            torches = room.torches
-            for torch in torches:
-                for enemy in torch.enemies:
+            for spawner in room.spawners:
+                for enemy in spawner.enemies:
                     enemy.draw(screen, self.spritesheet, self.cam_x, self.cam_y)
 
         timer_display = self.timer.get_display()

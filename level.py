@@ -3,7 +3,7 @@ import json
 from constants import *
 from pathlib import Path
 from parser import Sprite
-from tile import Tile, Torch
+from tile import *
 
 class Level():
     def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled', tile_offset = [0,0]):
@@ -15,7 +15,7 @@ class Level():
         self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
         self.tile_offset = tile_offset
         self.tiles = self.get_tiles()
-        self.torches = self.get_torches()
+        self.spawners = self.get_spawners()
 
         #to make things easy store start and exit when level is created
         self.update_enter_exit_pos()
@@ -54,7 +54,12 @@ class Level():
                         rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                         sprite = Sprite([16, 0, 16, 16])
                         tiles.append(Tile(rect, Sprite([0, 0, 16, 16]), "None"))
-                        tiles.append(Torch(rect, sprite, "Torch"))         
+                        tiles.append(Torch(rect, sprite, "Torch"))        
+                    if self.tile_data[key] == "Faucet":
+                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
+                        sprite = Sprite([48, 0, 16, 16])
+                        tiles.append(Tile(rect, Sprite([0, 0, 16, 16]), "None"))
+                        tiles.append(Faucet(rect, sprite, "Faucet"))     
                 else:
                     rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
                     sprite = Sprite([0, 0, 16, 16])
@@ -62,8 +67,8 @@ class Level():
 
         return tiles
 
-    def get_torches(self):
-        return [torch for torch in self.tiles if isinstance(torch, Torch)]
+    def get_spawners(self):
+        return [s for s in self.tiles if isinstance(s, Spawner)]
 
     def draw(self, screen, off_x = 0, off_y = 0, edit = False):
         tiles = self.tiles

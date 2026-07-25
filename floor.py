@@ -23,7 +23,7 @@ class Floor:
 
                 room.shift(x_off, y_off)
 
-            room.torches = room.get_torches()
+            room.spawners = room.get_spawners()
             self.rooms.append(room)
         
 
@@ -31,12 +31,12 @@ class Floor:
         for room in self.rooms:
             room.draw(screen, off_x, off_y)
 
-    def get_torches(self):
-        torches = []
+    def get_spawners(self):
+        spawners = []
         for room in self.rooms:
-            for torch in room.torches:
-                torches.append(torch)
-        return torches
+            for spawner in room.spawners:
+                spawners.append(spawner)
+        return spawners
 
     def get_tiles(self):
         tiles = []

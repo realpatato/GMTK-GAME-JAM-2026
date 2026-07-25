@@ -21,11 +21,15 @@ class Player():
         self.grounded = False
         self.can_jump = False
 
+        self.jump_height = 4
+        self.jump_accel = 0.1
+        self.fall_accel = 0.21
+
         self.max_x_vel = 2.5
         self.x_accel = 0
         self.x_vel = 0
 
-        self.max_y_vel = 5
+        self.max_y_vel = 7
         self.y_accel = 0
         self.y_vel = 0
 
@@ -43,7 +47,7 @@ class Player():
                 if self.can_jump:
                     self.can_jump = False
                     self.coyote_time = 0
-                    self.y_vel = -5
+                    self.y_vel = -self.jump_height
 
         if event.type == KEYUP:
             if event.key == K_d or event.key == K_RIGHT:
@@ -98,8 +102,10 @@ class Player():
                 else:
                     self.sprite.state = "l_idle"
 
+        self.y_accel = self.fall_accel
+        if (keys[K_w] or keys[K_UP]) and self.y_vel < 0:
+            self.y_accel = self.jump_accel
         self.inc_y_vel()
-        self.y_accel = 0.1
 
         self.sprite.advance()
 
