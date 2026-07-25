@@ -1,3 +1,5 @@
 **/__pycache__/
 rooms/untitled.json
 build
+dist
+main.spec
