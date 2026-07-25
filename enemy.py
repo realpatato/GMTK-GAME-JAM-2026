@@ -29,7 +29,7 @@ class Enemy():
         for tile in tiles:
             if self.hitbox.colliderect(tile.rect):
                 self.handle_y_collide(tile.rect)
-                
+
         self.h_move()
         for tile in tiles:
             if self.hitbox.colliderect(tile.rect):
@@ -109,8 +109,8 @@ class Enemy():
         if self.x_vel < 0:
             self.hitbox.left = rect.right
         self.x_vel *= -1
-
-        print(self.x_vel)
+        self.x_accel *= -1
+        self.rect.x = self.hitbox.x - self.hitbox_offsets[0]
 
     def gen_sprite(self):
         r_or_l_time = random.randint(150, 300)
