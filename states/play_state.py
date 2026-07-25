@@ -47,6 +47,8 @@ class PlayState(BaseState):
         pygame.mixer.music.play(-1, 0.0)
         self.volume = 1
 
+        self.paused = False
+
         self.next_floor()
 
     def next_floor(self):
@@ -66,6 +68,7 @@ class PlayState(BaseState):
         self.prev_room = None
 
     def update(self, dt):
+        if self.paused: return
         
         pygame.mixer.music.set_volume(self.volume)
         if (
@@ -150,6 +153,13 @@ class PlayState(BaseState):
         screen.blit(timer_display, timer_rect)
 
         self.player.draw(screen, self.spritesheet, self.cam_x, self.cam_y, self.timer)
+        
+        if self.paused: 
+            overlay = pygame.Surface(NATIVE_RESOLUTION, pygame.SRCALPHA)
+            pygame.draw.rect(overlay, (75, 61, 68, 200), (0, 0, NATIVE_RESOLUTION[0], NATIVE_RESOLUTION[1]))
+            screen.blit(overlay,(0,0))
+            screen.blit(self.timer.font.render("YOU ARE PAUSED", True, (255,255,255)), (0,150))
+            return
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -158,5 +168,21 @@ class PlayState(BaseState):
                 self.volume = min(1, self.volume + inc)
             if event.key == pygame.K_MINUS:
                 self.volume = max(0, self.volume - inc)
+
+            if event.key == pygame.K_RETURN:
+                self.paused = not self.paused
+                if self.paused:
+                    pygame.mixer.music.pause()
+                else:
+                    pygame.mixer.music.unpause()
+
+            if self.paused:
+                if event.key == pygame.K_ESCAPE:
+                    self.next_state="mainmenu_state"
+                    self.done = True
+
+                if event.key == pygame.K_r:
+                    self.next_state ="play_state"
+                    self.done = True
 
         self.player.handle_event(event)
