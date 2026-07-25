@@ -16,8 +16,8 @@ class Player():
         self.collision_hitbox = Rect([0, 0, 14, 16])
         self.collision_hitbox_offsets = (9, 16)
 
-        self.parry_hitbox = Rect([0, 0, 18, 26])
-        self.parry_hitbox_offsets = (6, 9)
+        self.parry_hitbox = Rect([0, 0, 28, 28])
+        self.parry_hitbox_offsets = (2, 9)
 
         self.friction = 0.93
 
@@ -184,7 +184,7 @@ class Player():
             if self.iframes_elapsed>self.iframes:
                 self.invincible =False
                 self.iframes_elapsed = 0
-        else:
+        elif not self.is_parrying:
             #getting hurt
             attacking_enemies = self.damage_hitbox.collidelistall(
                 [enemy.hitbox for enemy in enemies]
@@ -202,14 +202,16 @@ class Player():
         self.sprite.advance()
 
     def draw(self, screen, spritesheet, off_x, off_y, timer):
-        if not timer.has_ended:
-            if self.invincible:
-                if (self.iframes_elapsed // 4) % 2 == 1:
-                    screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
-                return
-            screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
-        else:
+        if timer.has_ended:
             screen.blit(spritesheet, self.rect.move(off_x, off_y), self.death_sprite.rect())
+            return
+        if self.invincible:
+            if (self.iframes_elapsed // 4) % 2 == 1:
+                screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
+            return
+        #if self.is_parrying:
+        #    draw.rect(screen, (255, 255,255), self.parry_hitbox.move(off_x,off_y))
+        screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
             #draw.rect(screen, (0, 255,0), self.collision_hitbox.move(off_x,off_y))
             #draw.rect(screen, (255, 0,0), self.damage_hitbox.move(off_x,off_y))
 
