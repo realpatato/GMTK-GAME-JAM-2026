@@ -30,7 +30,7 @@ class Game:
             await asyncio.sleep(0) 
 
         pygame.quit()
-        quit()
+        #quit()
             
 
     def handle_events(self):
