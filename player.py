@@ -1,12 +1,12 @@
 import parser
-from pygame import Rect, key, draw
+from pygame import FRect, key, draw
 import random
 from pygame.locals import *
 
 class Player():
     def __init__(self, x = 32, y = 0, sounds = {}):
         self.sprite = self.gen_sprite()
-        self.rect = Rect([x, y, 32, 32])
+        self.rect = FRect([x, y, 32, 32])
 
         self.sounds = sounds
 
@@ -163,6 +163,7 @@ class Player():
         else:
             #no matter if this is positive or negative, just bring it down by this factor
             self.x_vel *= self.friction
+            self.x_accel = 0
 
             if abs(self.x_vel) < 0.3:
                 if self.x_accel < 0:
@@ -173,10 +174,14 @@ class Player():
         if self.is_parrying:
             self.sprite.state = "parry"
 
-        self.y_accel = self.fall_accel
-        if (keys[K_w] or keys[K_UP] or keys[K_SPACE]) and self.y_vel < 0:
-            self.y_accel = self.jump_accel
-        self.inc_y_vel()
+        if not self.grounded:
+            self.y_accel = self.fall_accel
+            if (keys[K_w] or keys[K_UP] or keys[K_SPACE]) and self.y_vel < 0:
+                self.y_accel = self.jump_accel
+            self.inc_y_vel()
+        else:
+            self.y_vel = 0
+
         
 
         if self.invincible:
@@ -230,10 +235,12 @@ class Player():
                 accel *= 2
             self.x_vel += accel
 
-        if self.x_vel > self.max_x_vel:
-            self.x_vel = max(self.max_x_vel, self.x_vel - 0.09)
-        elif self.x_vel < -self.max_x_vel:
-            self.x_vel = min(-self.max_x_vel, self.x_vel + 0.09)
+        else:
+
+            if self.x_vel > self.max_x_vel:
+                self.x_vel = max(self.max_x_vel, self.x_vel - 0.09)
+            elif self.x_vel < -self.max_x_vel:
+                self.x_vel = min(-self.max_x_vel, self.x_vel + 0.09)
 
     def inc_y_vel(self):
         self.y_vel += self.y_accel
@@ -269,7 +276,7 @@ class Player():
         #update hitboxes
         self.rect.x = self.collision_hitbox.x - self.collision_hitbox_offsets[0]
         self.damage_hitbox.x = self.rect.x + self.damage_hitbox_offsets[0]
-        self.parry_hitbox.y = self.rect.x + self.parry_hitbox_offsets[0]
+        self.parry_hitbox.x = self.rect.x + self.parry_hitbox_offsets[0]
 
     def handle_y_collide(self, rect):
         if self.y_vel > 0:
