@@ -258,7 +258,6 @@
         "15,37": "Ground",
         "19,3": "Exit",
         "0,37": "Enter",
-        "17,33": "Faucet",
         "2,16": "Faucet",
         "6,31": "Ground",
         "5,31": "Ground",
@@ -310,7 +309,6 @@
         "5,7": "Ground",
         "5,8": "Ground",
         "6,8": "Ground",
-        "6,7": "Ground",
-        "3,3": "Torch"
+        "6,7": "Ground"
     }
 }

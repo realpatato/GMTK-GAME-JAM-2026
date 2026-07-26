@@ -4,6 +4,7 @@ import pygame
 import player
 import floor
 import timer
+import random
 
 pygame.display.init()
 
@@ -43,7 +44,8 @@ class PlayState(BaseState):
         self.room_count_mult_per_floor = 1.3 #keep increasing by this factor
         self.current_room_count = self.base_room_count
 
-        pygame.mixer.music.load("assets/music/floor.ogg")
+
+        pygame.mixer.music.load(f'assets/music/floorvariant{random.randint(1,3)}.ogg')
         pygame.mixer.music.play(-1, 0.0)
         self.volume = 1
 

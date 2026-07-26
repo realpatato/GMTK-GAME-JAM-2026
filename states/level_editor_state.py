@@ -149,7 +149,7 @@ class LevelEditorState(BaseState):
                 if event.key == pygame.K_BACKSLASH:
                     file_path = filedialog.askopenfilename()
                     if isinstance(file_path, str):
-                        self.level = Level.load(file_path)
+                        self.level = Level.load(file_path,spritesheet=self.spritesheet)
                         if self.level.name != "untitled":
                             self.gui["level title"].text = self.level.name
                         if self.level.w != "20":
