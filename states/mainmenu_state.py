@@ -15,11 +15,11 @@ class MainMenuState(BaseState):
 
 
         screen.blit(
-            self.font.render(f"BOMBY - THE GAME", True, (255,255,255)), 
+            self.font.render(f"BOMBY - THE GAME", True, OFFWHITE_COLOR), 
             (0,0)
         )
         screen.blit(
-            self.font.render(f"ENTER TO BEGIN", True, (255,255,255)), 
+            self.font.render(f"ENTER TO BEGIN", True, OFFWHITE_COLOR), 
             (0,200)
         )
 

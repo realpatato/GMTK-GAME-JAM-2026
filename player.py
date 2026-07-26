@@ -38,7 +38,7 @@ class Player():
 
         self.can_parry = False
         self.is_parrying = False
-        self.parry_cooldown_duration = 0.8
+        self.parry_cooldown_duration = 0.6
         self.parry_cooldown_elapsed = 0
 
         self.max_x_vel = 3.7

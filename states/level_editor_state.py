@@ -15,8 +15,9 @@ class LevelEditorState(BaseState):
         super().__init__()
         self.font = pygame.font.Font('assets/Bomby.ttf', 12)
 
+        self.spritesheet = pygame.image.load("assets/bomby_sprite_sheet.png").convert_alpha()
         self.level = Level(
-            spritesheet=pygame.image.load("assets/Spritesheet.png").convert_alpha()
+            spritesheet=self.spritesheet
         )
 
         self.gui = {
@@ -77,6 +78,7 @@ class LevelEditorState(BaseState):
         screen.fill((0, 0, 0))
 
         #draw levle
+        self.level.create_background_surface()
         self.level.draw(screen, math.floor(self.cam_x), math.floor(self.cam_y), True)
 
         # cursor 
@@ -139,7 +141,8 @@ class LevelEditorState(BaseState):
 
                 #clear
             if event.key == pygame.K_0:
-                self.level = Level()
+                print('attempt clear')
+                self.level = Level(spritesheet=self.spritesheet)
 
             #load
             if IS_DESKTOP:

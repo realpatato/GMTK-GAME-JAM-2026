@@ -162,7 +162,7 @@ class PlayState(BaseState):
             overlay = pygame.Surface(NATIVE_RESOLUTION, pygame.SRCALPHA)
             pygame.draw.rect(overlay, (*BACKGROUND_COLOR, 200), (0, 0, NATIVE_RESOLUTION[0], NATIVE_RESOLUTION[1]))
             screen.blit(overlay,(0,0))
-            screen.blit(self.timer.font.render("YOU ARE PAUSED", True, (255,255,255)), (0,150))
+            screen.blit(self.timer.font.render("YOU ARE PAUSED", True,OFFWHITE_COLOR), (0,150))
             return
 
     def handle_event(self, event):
