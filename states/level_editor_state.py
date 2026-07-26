@@ -15,7 +15,9 @@ class LevelEditorState(BaseState):
         super().__init__()
         self.font = pygame.font.Font('assets/Bomby.ttf', 12)
 
-        self.level = Level()
+        self.level = Level(
+            spritesheet=pygame.image.load("assets/Spritesheet.png").convert_alpha()
+        )
 
         self.gui = {
             "level title": InputBox(30, 1, 60, self.font, "untitled"),

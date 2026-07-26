@@ -16,7 +16,7 @@ pygame.display.init()
 class PlayState(BaseState):
     def __init__(self):
         super().__init__()
-        self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
+        self.spritesheet = pygame.image.load("assets/bomby_sprite_sheet.png").convert_alpha()
         pygame.mixer.init()
         self.sounds = {
             "jump": pygame.mixer.Sound("assets/sounds/jump.ogg"),
@@ -54,7 +54,10 @@ class PlayState(BaseState):
     def next_floor(self):
         
         print(f'current floor has {self.current_room_count} rooms!!')
-        self.floor = floor.Floor(int(self.current_room_count))
+        self.floor = floor.Floor(
+            self.spritesheet,
+            int(self.current_room_count)
+        )
 
         enter_pos = self.floor.rooms[0].enter_pos
         self.player.move(
@@ -139,7 +142,7 @@ class PlayState(BaseState):
             self.done = True'''
         
     def draw(self, screen):
-        screen.fill((75, 61, 68))
+        screen.fill(BACKGROUND_COLOR)
                     
         self.floor.draw(screen, self.cam_x, self.cam_y)
 
@@ -153,10 +156,11 @@ class PlayState(BaseState):
         screen.blit(timer_display, timer_rect)
 
         self.player.draw(screen, self.spritesheet, self.cam_x, self.cam_y, self.timer)
+
         
         if self.paused: 
             overlay = pygame.Surface(NATIVE_RESOLUTION, pygame.SRCALPHA)
-            pygame.draw.rect(overlay, (75, 61, 68, 200), (0, 0, NATIVE_RESOLUTION[0], NATIVE_RESOLUTION[1]))
+            pygame.draw.rect(overlay, (*BACKGROUND_COLOR, 200), (0, 0, NATIVE_RESOLUTION[0], NATIVE_RESOLUTION[1]))
             screen.blit(overlay,(0,0))
             screen.blit(self.timer.font.render("YOU ARE PAUSED", True, (255,255,255)), (0,150))
             return

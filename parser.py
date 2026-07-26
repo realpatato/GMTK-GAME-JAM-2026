@@ -15,9 +15,9 @@ class Animation():
 
     def advance(self, ret_end=False):
         self.ct += 1
-        if self.ct == self.frame_time:
+        if self.ct >= self.frame_time:
             self.current_frame_index += 1
-            if self.current_frame_index == len(self.frames) and ret_end:
+            if self.current_frame_index >= len(self.frames) and ret_end:
                 return "END"
             self.ct = 0
         return self.ct
@@ -45,6 +45,9 @@ class AnimatedSprite(Sprite):
 
     def advance(self, ret_end=False):
         return self.anims[self.state].advance(ret_end)
+
+    def anim(self):
+        return self.anims[self.state]
 
     def rect(self):
         return self.anims[self.state].rect()

@@ -1,5 +1,6 @@
 import math
 import sys
+from pygame.locals import *
 
 IS_DESKTOP = sys.platform != "emscripten"
 
@@ -11,3 +12,5 @@ SCALE_FACTOR = 3
 WINDOW_SIZE = (1280,720)
 
 NATIVE_RESOLUTION = [math.ceil(x / SCALE_FACTOR) for x in WINDOW_SIZE]
+
+BACKGROUND_COLOR = (40, 19, 23)

@@ -132,12 +132,12 @@ class Flamey(Enemy):
     def gen_sprite(self):
         r_or_l_time = random.randint(150, 300)
         anims = {
-            "r_pre_jump" : ((1, -1), 30), 
-            "r" : ((0, -1), r_or_l_time), 
-            "l_pre_jump" : ((2, -1), 30), 
-            "l" : ((3, -1), r_or_l_time)
+            "r_pre_jump" : ([1], 30), 
+            "r" : ([2], r_or_l_time), 
+            "l_pre_jump" : ([3], 30), 
+            "l" : ([0], r_or_l_time), 
         }
-        base_rect = [0, 48, 16, 16]
+        base_rect = [112, 144, 16, 16]
         return parser.AnimatedSprite(base_rect, 4, anims, "r")
 
 class WaterBlob(Enemy):
@@ -149,7 +149,7 @@ class WaterBlob(Enemy):
         self.jump_vel = -1 * (random.randint(20, 50) / 10)
 
         self.hitbox = Rect([0, 0, 14, 14])
-        self.hitbox_offsets = (9, 18)
+        self.hitbox_offsets = (1, 2)
 
         self.attack_cycle = list(self.sprite.anims.keys())
         self.attack_phase = 3
@@ -180,10 +180,12 @@ class WaterBlob(Enemy):
     def gen_sprite(self):
         r_or_l_time = random.randint(150, 300)
         anims = {
-            "r_pre_jump" : ((1, -1), 30), 
-            "r" : ((0, -1), r_or_l_time), 
-            "l_pre_jump" : ((2, -1), 30), 
-            "l" : ((3, -1), r_or_l_time)
+            "r_pre_jump" : ([1], 30), 
+            "r" : ([2], r_or_l_time), 
+
+            #same for now till i figoure out flipping via code
+            "l_pre_jump" : ([3], 30), 
+            "l" : ([0], r_or_l_time), 
         }
-        base_rect = [128, 64, 32, 32]
+        base_rect = [112, 160, 16, 16]
         return parser.AnimatedSprite(base_rect, 4, anims, "r")

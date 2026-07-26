@@ -3,7 +3,11 @@ import random
 from pathlib import Path
 
 class Floor:
-    def __init__(self, room_count):
+    def __init__(self, spritesheet, room_count):
+        self.spritesheet = spritesheet
+        self.generate_rooms(room_count)
+
+    def generate_rooms(self, room_count):
         self.rooms = []
 
         dir_path = Path('assets/rooms')
@@ -27,7 +31,7 @@ class Floor:
 
         if start_files:
             random_start_file = random.choice(start_files)
-            room = level.Level.load(random_start_file)
+            room = level.Level.load(random_start_file, spritesheet=self.spritesheet)
             room.spawners = room.get_spawners()
             self.rooms.append(room)
         else:
@@ -41,7 +45,7 @@ class Floor:
         while i < room_count + 1:
             files = end_files if i == room_count and end_files else middle_files
             random_room_file = random.choice(files)
-            room = level.Level.load(random_room_file)
+            room = level.Level.load(random_room_file, spritesheet=self.spritesheet)
 
             old_room = self.rooms[-1]
 

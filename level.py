@@ -6,13 +6,13 @@ from parser import Sprite
 from tile import *
 
 class Level():
-    def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled', tile_offset = [0,0]):
+    def __init__(self, w = 20, h = 12, tiles = {}, name = 'untitled', tile_offset = [0,0], spritesheet=None):
         #give levels names. make button and inputbox so that we can set the name, lvl w/h, and click open file button
         self.tile_data = tiles
         self.w = w
         self.h = h
         self.name = name
-        self.spritesheet = pygame.image.load("assets/Spritesheet.png").convert_alpha()
+        self.spritesheet = spritesheet
         self.tile_offset = tile_offset
         self.tiles = self.create_tile_objs()
         self.spawners = self.get_spawners()
@@ -22,8 +22,24 @@ class Level():
         self.exit_pos = None
         self.update_enter_exit_pos()
 
+        self.create_background_surface()
+
         #store a rect that contains the bounds of the room to see what room player is in
         self.update_bounds()
+
+    def create_background_surface(self):
+        #draw background pattern
+        self.background_surface = pygame.Surface((self.w *TILE_SIZE, self.h*TILE_SIZE))
+        for r in range(self.h // 2 + 1):
+            for c in range(self.w // 2 + 1):
+                y = r * 2 + self.tile_offset[0]
+                x = c * 2 + self.tile_offset[1]
+                self.background_surface.blit(
+                    self.spritesheet, 
+                    (x * TILE_SIZE, y * TILE_SIZE), 
+                    [0, 144+32, 32, 32]
+                )
+                #tile.sprite.rect()
 
     def update_bounds(self):
         self.bounds = pygame.Rect(
@@ -50,33 +66,36 @@ class Level():
                 key = str(r) + "," + str(c)
                 y = r + self.tile_offset[0]
                 x = c + self.tile_offset[1]
+
+                solid_rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, TILE_SIZE, TILE_SIZE])
+                decor_rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
+
                 if key in self.tile_data.keys():
-                    if self.tile_data[key] == "Ground":
-                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, TILE_SIZE, TILE_SIZE])
-                        sprite = Sprite([32, 0, 16, 16])
-                        tiles.append(Tile(rect, sprite, "Ground"))
                     if self.tile_data[key] == "Enter":
-                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
-                        sprite = Sprite([0, 0, 16, 16])
-                        tiles.append(Tile(rect, sprite, "Enter"))
+                        tiles.append(Tile("Enter", decor_rect))
+
                     if self.tile_data[key] == "Exit":
-                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
-                        sprite = Sprite([0, 0, 16, 16])
-                        tiles.append(Tile(rect, sprite, "Exit"))
+                        tiles.append(Tile("Exit", decor_rect))
+
+                    if self.tile_data[key] == "Ground":
+                        tiles.append(Tile(
+                            "Ground",
+                            solid_rect,
+                            Sprite([64, 160, 16, 16])
+                        ))
+
                     if self.tile_data[key] == "Torch":
-                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
-                        sprite = Sprite([16, 0, 16, 16])
-                        tiles.append(Tile(rect, Sprite([0, 0, 16, 16]), "None"))
-                        tiles.append(Torch(rect, sprite, "Torch"))        
+                        tiles.append(Torch(
+                            "Torch",
+                            decor_rect,
+                            Sprite([96, 160, 16, 16])
+                        ))        
                     if self.tile_data[key] == "Faucet":
-                        rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
-                        sprite = Sprite([48, 0, 16, 16])
-                        tiles.append(Tile(rect, Sprite([0, 0, 16, 16]), "None"))
-                        tiles.append(Faucet(rect, sprite, "Faucet"))     
-                else:
-                    rect = pygame.Rect([y * TILE_SIZE, x * TILE_SIZE, 0, 0])
-                    sprite = Sprite([0, 0, 16, 16])
-                    tiles.append(Tile(rect, sprite, "None"))
+                        tiles.append(Faucet(
+                            "Faucet",
+                            decor_rect.move(0, -16),
+                            Sprite([80, 144, 16, 32])
+                        )) 
 
         return tiles
 
@@ -84,9 +103,18 @@ class Level():
         return [s for s in self.tiles if isinstance(s, Spawner)]
 
     def draw(self, screen, off_x = 0, off_y = 0, edit = False):
+        screen.blit(
+            self.background_surface, (
+                self.tile_offset[0] * TILE_SIZE + math.floor(off_x), 
+                self.tile_offset[1] * TILE_SIZE + math.floor(off_y)
+            )
+        )
+
+        #draw tile obj
         tiles = self.tiles
         for tile in tiles:
-            screen.blit(self.spritesheet, (tile.rect[0] + off_x, tile.rect[1] + off_y), tile.sprite.rect())
+            if tile.sprite:
+                screen.blit(self.spritesheet, (tile.rect[0] + off_x, tile.rect[1] + off_y), tile.sprite.rect())
             if edit:
                 if tile.type == "Exit":
                     pygame.draw.rect(screen, (255, 0, 0), (tile.rect[0] + off_x, tile.rect[1] + off_y, TILE_SIZE, TILE_SIZE))
@@ -99,7 +127,7 @@ class Level():
         self.tiles = self.create_tile_objs()
 
     @classmethod
-    def load(cls, path, offset=[0,0]):
+    def load(cls, path, offset=[0,0], spritesheet= None):
         level_data = None
         with open(path, 'r') as f:
             level_data = json.load(f)
@@ -109,7 +137,8 @@ class Level():
                 h= level_data["size"]["height"], 
                 tiles= level_data["tiles"], 
                 name= level_data["name"],
-                tile_offset= offset
+                tile_offset= offset,
+                spritesheet = spritesheet
             )
         else:
             print('could not load file')

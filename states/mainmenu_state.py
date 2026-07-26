@@ -1,5 +1,6 @@
 from .base_state import BaseState
 import pygame
+from constants import *
 
 class MainMenuState(BaseState):
     def __init__(self):
@@ -10,7 +11,7 @@ class MainMenuState(BaseState):
         super().enter(persistent_data)
 
     def draw(self, screen):
-        screen.fill((75, 61, 68))
+        screen.fill(BACKGROUND_COLOR)
 
 
         screen.blit(

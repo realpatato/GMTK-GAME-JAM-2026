@@ -1,7 +1,7 @@
 from enemies import *
 
 class Tile():
-    def __init__(self, rect, sprite, type):
+    def __init__(self, type, rect, sprite = None):
         self.rect = rect
         self.sprite = sprite
         self.type = type

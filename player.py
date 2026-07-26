@@ -1,11 +1,12 @@
 import parser
-from pygame import FRect, key, draw
+from pygame import FRect, key, draw, transform
 import random
 from pygame.locals import *
 
 class Player():
     def __init__(self, x = 32, y = 0, sounds = {}):
         self.sprite = self.gen_sprite()
+        self.parry_sprite = self.gen_parry_sprite()
         self.rect = FRect([x, y, 32, 32])
 
         self.sounds = sounds
@@ -17,7 +18,7 @@ class Player():
         self.collision_hitbox_offsets = (9, 16)
 
         self.parry_hitbox = Rect([0, 0, 28, 28])
-        self.parry_hitbox_offsets = (2, 9)
+        self.parry_hitbox_offsets = (2, 26)
 
         self.friction = 0.93
 
@@ -37,8 +38,6 @@ class Player():
 
         self.can_parry = False
         self.is_parrying = False
-        self.parry_duration = 0.12
-        self.parry_elapsed = 0
         self.parry_cooldown_duration = 0.8
         self.parry_cooldown_elapsed = 0
 
@@ -53,6 +52,8 @@ class Player():
         self.death_sprite = self.gen_death_sprite()
         self.death_over = False
         self.death_sound_played = False
+
+        self.flip_h = False
 
     def play_sound(self, sound):
         if sound not in self.sounds:
@@ -88,6 +89,8 @@ class Player():
                     self.is_parrying = True
                     self.parry_elapsed = 0
                     self.play_sound("parry")
+                    self.parry_sprite.anim().current_frame_index = 0
+                    self.y_vel -= 2
 
         if event.type == KEYUP:
             if event.key in [K_w, K_UP, K_SPACE]:
@@ -126,9 +129,8 @@ class Player():
             self.can_jump = True
 
         if self.is_parrying:
-            self.parry_elapsed+=dt
             self.parry_cooldown_elapsed = 0
-            if self.parry_elapsed >= self.parry_duration:
+            if self.parry_sprite.advance(True)=="END":
                 self.is_parrying = False
 
             #actually parry
@@ -139,7 +141,7 @@ class Player():
                 #PARRIED
                 enemy = enemies[parried_enemies[0]]
                 enemy.should_die = True
-                self.y_vel = -self.jump_height
+                self.y_vel = -self.jump_height * 1.3
                 self.play_sound("gaintime")
                 self.x_vel *= 2
                 timer.time += enemy.reward_time
@@ -154,25 +156,26 @@ class Player():
             self.can_parry = False
             
         keys = key.get_pressed()
-        if keys[K_d] or keys[K_RIGHT]:
+        if keys[K_a] or keys[K_LEFT]: self.flip_h = True
+        if keys[K_d] or keys[K_RIGHT]: self.flip_h=False
+        if any([keys[K_a],keys[K_d],keys[K_LEFT],keys[K_RIGHT]]):
             self.inc_x_vel()
-            self.sprite.state = "r_walk"
-        elif keys[K_a] or keys[K_LEFT]:
-            self.inc_x_vel()
-            self.sprite.state = "l_walk"
+            self.sprite.state = "walk"
         else:
             #no matter if this is positive or negative, just bring it down by this factor
             self.x_vel *= self.friction
             self.x_accel = 0
 
-            if abs(self.x_vel) < 0.3:
-                if self.x_accel < 0:
-                    self.sprite.state = "r_idle"
-                else:
-                    self.sprite.state = "l_idle"
+            if abs(self.x_vel) < 1:
+                self.sprite.state = "idle"
 
-        if self.is_parrying:
-            self.sprite.state = "parry"
+        if not self.grounded:
+            if self.y_vel < 0.1:
+                self.sprite.state ="jump"
+            elif self.y_vel < 1:
+                self.sprite.state = "midair"
+            else:
+                self.sprite.state ="fall"
 
         if not self.grounded:
             self.y_accel = self.fall_accel
@@ -207,20 +210,35 @@ class Player():
         self.sprite.advance()
 
     def draw(self, screen, spritesheet, off_x, off_y, timer):
-        if timer.has_ended:
-            screen.blit(spritesheet, self.rect.move(off_x, off_y), self.death_sprite.rect())
-            return
-        if self.invincible:
+        draw_pos = self.rect.move(off_x, off_y)
+
+        if self.is_parrying:
+            sprite_rect = self.parry_sprite.rect()
+            draw_pos.y -= 16
+
+        elif timer.has_ended:
+            sprite_rect = self.death_sprite.rect()
+            draw_pos.y -= 16
+
+        elif self.invincible:
             if (self.iframes_elapsed // 4) % 2 == 1:
-                screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
+                return
+            sprite_rect = self.sprite.rect()
+
+        else:
+            sprite_rect = self.sprite.rect()
+
+        if spritesheet.get_rect().contains(sprite_rect):
+            sprite_image = spritesheet.subsurface(sprite_rect)
+            if self.flip_h:
+                sprite_image = transform.flip(sprite_image, True, False)
+            screen.blit(sprite_image, draw_pos)
+        else:
             return
-        #if self.is_parrying:
-        #    draw.rect(screen, (255, 255,255), self.parry_hitbox.move(off_x,off_y))
-        screen.blit(spritesheet, self.rect.move(off_x, off_y), self.sprite.rect())
+
+
             #draw.rect(screen, (0, 255,0), self.collision_hitbox.move(off_x,off_y))
             #draw.rect(screen, (255, 0,0), self.damage_hitbox.move(off_x,off_y))
-
-
     def inc_x_vel(self):
         keys = key.get_pressed()
         r = keys[K_d] or keys[K_RIGHT]
@@ -291,18 +309,25 @@ class Player():
 
     def gen_sprite(self):
         anims = {
-            "r_idle" : ((0, 2), 10), 
-            "r_walk" : ((1, 2, 3), 10), 
-            "l_idle" : ((7, 5), 10), 
-            "l_walk" : ((6, 5, 4), 10),
-            "parry" : ((8, 8), 10),
+            "idle" : ([0], 10), 
+            "jump" : ([1], 10), 
+            "midair" : ([2], 10), 
+            "fall" : ([3], 10), 
+            "walk" : ((4,5,6,7), 5), 
         }
-        base_rect = [0, 16, 32, 32]
-        return parser.AnimatedSprite(base_rect, 9, anims, "r_idle")
+        base_rect = [0, 32, 32, 32]
+        return parser.AnimatedSprite(base_rect, 9, anims, "idle")
 
     def gen_death_sprite(self):
         anims = {
-            "explode" : ((0, 1, 2, 3,0, 1, 2, 3,0, 1, 2, 3), 3)
+            "explode" : ((0, 1, 2, 3, 4,5,5,5,5,5,5,5,5,5), 10)
         }
-        base_rect = [0, 64, 32, 32]
-        return parser.AnimatedSprite(base_rect, 4, anims, "explode")
+        base_rect = [128, 64, 32, 80]
+        return parser.AnimatedSprite(base_rect, 14, anims, "explode")
+
+    def gen_parry_sprite(self):
+        anims = {
+            "parry" : ((0,1,2,3), 3)
+        }
+        base_rect = [0, 64, 32, 80]
+        return parser.AnimatedSprite(base_rect, 4, anims, "parry")
